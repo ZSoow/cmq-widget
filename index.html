@@ -1,658 +1,112 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CMQ – Accueil saisie</title>
-<script src="https://docs.getgrist.com/grist-plugin-api.js"></script>
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --c-purple-50: #EEEDFE; --c-purple-200: #AFA9EC; --c-purple-600: #534AB7; --c-purple-800: #3C3489;
-    --c-teal-50: #E1F5EE; --c-teal-200: #5DCAA5; --c-teal-600: #0F6E56; --c-teal-800: #085041;
-    --c-amber-50: #FAEEDA; --c-amber-200: #FAC775; --c-amber-600: #854F0B; --c-amber-800: #633806;
-    --c-blue-50: #E6F1FB; --c-blue-200: #85B7EB; --c-blue-600: #185FA5; --c-blue-800: #0C447C;
-    --c-coral-50: #FAECE7; --c-coral-200: #F0997B; --c-coral-600: #993C1D; --c-coral-800: #712B13;
-    --radius: 10px;
-    --radius-sm: 6px;
-    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  }
-
-  body {
-    font-family: var(--font);
-    background: #f4f3f0;
-    color: #1a1a1a;
-    min-height: 100vh;
-  }
-
-  .header {
-    background: #fff;
-    border-bottom: 0.5px solid #ddd;
-    padding: 14px 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .header-left { display: flex; align-items: center; gap: 10px; }
-  .logo-badge {
-    width: 34px; height: 34px; border-radius: 8px;
-    background: var(--c-purple-600); display: flex; align-items: center;
-    justify-content: center; font-size: 16px; color: #fff; font-weight: 600;
-  }
-  .header h1 { font-size: 16px; font-weight: 600; color: #1a1a1a; }
-  .header p { font-size: 12px; color: #888; margin-top: 1px; }
-
-  .btn-add {
-    background: var(--c-purple-600); color: #fff;
-    border: none; border-radius: var(--radius-sm);
-    padding: 9px 18px; font-size: 14px; font-weight: 500;
-    cursor: pointer; display: flex; align-items: center; gap: 7px;
-    transition: background 0.15s;
-  }
-  .btn-add:hover { background: var(--c-purple-800); }
-  .btn-add .plus { font-size: 18px; line-height: 1; }
-
-  .main { padding: 20px 24px; max-width: 1100px; }
-
-  /* KPI cards */
-  .kpi-row {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
-    margin-bottom: 20px;
-  }
-  .kpi {
-    background: #fff;
-    border-radius: var(--radius);
-    border: 0.5px solid #e0e0e0;
-    padding: 14px 16px;
-  }
-  .kpi-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
-  .kpi-value { font-size: 28px; font-weight: 600; color: #1a1a1a; line-height: 1; }
-  .kpi-sub { font-size: 12px; color: #aaa; margin-top: 4px; }
-  .kpi-dot {
-    display: inline-block; width: 8px; height: 8px;
-    border-radius: 50%; margin-right: 5px;
-  }
-
-  /* Projets pills */
-  .projets-row { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-  .projet-pill {
-    border-radius: 20px; padding: 6px 14px; font-size: 13px; font-weight: 500;
-    border: 0.5px solid;
-  }
-  .pill-bea { background: var(--c-purple-50); color: var(--c-purple-800); border-color: var(--c-purple-200); }
-  .pill-fibi { background: var(--c-teal-50); color: var(--c-teal-800); border-color: var(--c-teal-200); }
-
-  /* Two-column layout */
-  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
-
-  .card {
-    background: #fff;
-    border-radius: var(--radius);
-    border: 0.5px solid #e0e0e0;
-    overflow: hidden;
-  }
-  .card-header {
-    padding: 12px 16px;
-    border-bottom: 0.5px solid #f0f0f0;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .card-title { font-size: 13px; font-weight: 600; color: #444; }
-  .card-body { padding: 0; }
-
-  /* Actions récentes */
-  .action-row {
-    display: flex; align-items: flex-start;
-    padding: 11px 16px; gap: 12px;
-    border-bottom: 0.5px solid #f5f5f5;
-    cursor: pointer; transition: background 0.1s;
-  }
-  .action-row:last-child { border-bottom: none; }
-  .action-row:hover { background: #fafafa; }
-  .action-avatar {
-    width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 11px; font-weight: 600;
-  }
-  .av-purple { background: var(--c-purple-50); color: var(--c-purple-600); }
-  .av-teal   { background: var(--c-teal-50);   color: var(--c-teal-600); }
-  .av-amber  { background: var(--c-amber-50);  color: var(--c-amber-600); }
-  .av-coral  { background: var(--c-coral-50);  color: var(--c-coral-600); }
-  .av-blue   { background: var(--c-blue-50);   color: var(--c-blue-600); }
-
-  .action-info { flex: 1; min-width: 0; }
-  .action-name { font-size: 13px; font-weight: 500; color: #222; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .action-meta { font-size: 11px; color: #999; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .action-date { font-size: 11px; color: #bbb; flex-shrink: 0; }
-  .badge {
-    display: inline-block; font-size: 10px; font-weight: 500;
-    padding: 2px 7px; border-radius: 10px;
-  }
-  .badge-bea { background: var(--c-purple-50); color: var(--c-purple-800); }
-  .badge-fibi { background: var(--c-teal-50); color: var(--c-teal-800); }
-
-  /* Barres par responsable */
-  .resp-row { padding: 10px 16px; border-bottom: 0.5px solid #f5f5f5; }
-  .resp-row:last-child { border-bottom: none; }
-  .resp-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
-  .resp-name { font-size: 13px; color: #333; font-weight: 500; }
-  .resp-count { font-size: 12px; color: #999; }
-  .bar-bg { background: #f0f0f0; border-radius: 3px; height: 5px; }
-  .bar-fill { height: 5px; border-radius: 3px; transition: width 0.5s ease; }
-
-  /* Formulaire modal */
-  .modal-overlay {
-    display: none; position: fixed; inset: 0;
-    background: rgba(0,0,0,0.35); z-index: 100;
-    align-items: center; justify-content: center;
-  }
-  .modal-overlay.open { display: flex; }
-  .modal {
-    background: #fff; border-radius: 14px;
-    width: 520px; max-width: 95vw;
-    padding: 24px; box-shadow: 0 8px 40px rgba(0,0,0,0.18);
-  }
-  .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-  .modal-title { font-size: 16px; font-weight: 600; color: #1a1a1a; }
-  .btn-close { background: none; border: none; font-size: 20px; cursor: pointer; color: #999; padding: 0 4px; }
-
-  .form-group { margin-bottom: 14px; }
-  .form-label { display: block; font-size: 12px; font-weight: 500; color: #555; margin-bottom: 5px; }
-  .form-label .required { color: var(--c-coral-600); margin-left: 3px; }
-  select, input[type="text"], input[type="date"], textarea {
-    width: 100%; padding: 9px 11px; border: 1px solid #ddd;
-    border-radius: var(--radius-sm); font-size: 13px; color: #222;
-    background: #fff; font-family: var(--font);
-    transition: border-color 0.15s;
-  }
-  select:focus, input:focus, textarea:focus {
-    outline: none; border-color: var(--c-purple-600);
-    box-shadow: 0 0 0 3px var(--c-purple-50);
-  }
-  select:disabled { background: #f8f8f8; color: #bbb; }
-  textarea { resize: vertical; min-height: 70px; }
-
-  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-
-  .cascade-arrow {
-    text-align: center; color: #ccc; font-size: 12px;
-    margin: -6px 0 8px; letter-spacing: 2px;
-  }
-
-  .modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; padding-top: 16px; border-top: 0.5px solid #f0f0f0; }
-  .btn-cancel {
-    background: none; border: 1px solid #ddd; color: #666;
-    border-radius: var(--radius-sm); padding: 9px 18px; font-size: 13px; cursor: pointer;
-  }
-  .btn-cancel:hover { background: #f8f8f8; }
-  .btn-submit {
-    background: var(--c-purple-600); color: #fff; border: none;
-    border-radius: var(--radius-sm); padding: 9px 22px; font-size: 13px; font-weight: 500;
-    cursor: pointer; transition: background 0.15s;
-  }
-  .btn-submit:hover { background: var(--c-purple-800); }
-  .btn-submit:disabled { background: #ccc; cursor: not-allowed; }
-
-  .success-banner {
-    display: none; background: var(--c-teal-50); color: var(--c-teal-800);
-    border: 1px solid var(--c-teal-200); border-radius: var(--radius-sm);
-    padding: 10px 14px; font-size: 13px; margin-bottom: 14px;
-  }
-  .success-banner.show { display: block; }
-
-  .step-indicator {
-    display: flex; gap: 6px; margin-bottom: 18px;
-  }
-  .step {
-    flex: 1; height: 3px; border-radius: 2px; background: #eee;
-    transition: background 0.3s;
-  }
-  .step.active { background: var(--c-purple-600); }
-  .step.done { background: var(--c-teal-200); }
-
-  @media (max-width: 700px) {
-    .kpi-row { grid-template-columns: 1fr 1fr; }
-    .two-col { grid-template-columns: 1fr; }
-    .form-row { grid-template-columns: 1fr; }
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard CMQ - Grist</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://docs.getgrist.com/grist-plugin-api.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .card { background: white; border-radius: 12px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); transition: transform 0.2s; }
+        .card:hover { transform: translateY(-2px); }
+    </style>
 </head>
-<body>
+<body class="p-6">
 
-<div class="header">
-  <div class="header-left">
-    <div class="logo-badge">C</div>
-    <div>
-      <h1>CMQ Bioéco — Suivi des actions</h1>
-      <p>Tableau de bord équipe</p>
-    </div>
-  </div>
-  <button class="btn-add" onclick="openModal()">
-    <span class="plus">+</span> Ajouter une action
-  </button>
-</div>
+    <div class="max-w-6xl mx-auto">
+        <div class="flex items-center justify-between mb-8 bg-blue-900 p-6 rounded-xl text-white shadow-lg">
+            <div>
+                <h1 class="text-2xl font-bold">Tableau de Bord - CMQ</h1>
+                <p class="opacity-80">Suivi des actions et indicateurs en temps réel</p>
+            </div>
+            <div class="text-4xl opacity-20">
+                <i class="fas fa-chart-line"></i>
+            </div>
+        </div>
 
-<div class="main">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="card p-6 border-l-4 border-blue-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500 uppercase">Actions</p>
+                        <h3 id="total-actions" class="text-3xl font-bold text-gray-800">...</h3>
+                    </div>
+                    <div class="bg-blue-100 p-3 rounded-full text-blue-600">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                </div>
+            </div>
 
-  <!-- KPIs -->
-  <div class="kpi-row" id="kpiRow">
-    <div class="kpi">
-      <div class="kpi-label">Actions totales</div>
-      <div class="kpi-value" id="kpiTotal">—</div>
-      <div class="kpi-sub">dans la base</div>
-    </div>
-    <div class="kpi">
-      <div class="kpi-label">Ce mois-ci</div>
-      <div class="kpi-value" id="kpiMois">—</div>
-      <div class="kpi-sub" id="kpiMoisLabel">actions saisies</div>
-    </div>
-    <div class="kpi">
-      <div class="kpi-label">Projet BEA</div>
-      <div class="kpi-value" id="kpiBea">—</div>
-      <div class="kpi-sub"><span class="kpi-dot" style="background:var(--c-purple-600)"></span>PIA3</div>
-    </div>
-    <div class="kpi">
-      <div class="kpi-label">Projet FIBI</div>
-      <div class="kpi-value" id="kpiFibi">—</div>
-      <div class="kpi-sub"><span class="kpi-dot" style="background:var(--c-teal-600)"></span>PIA4</div>
-    </div>
-  </div>
+            <div class="card p-6 border-l-4 border-indigo-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500 uppercase">Sous-actions</p>
+                        <h3 id="total-sous-actions" class="text-3xl font-bold text-gray-800">...</h3>
+                    </div>
+                    <div class="bg-indigo-100 p-3 rounded-full text-indigo-600">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                </div>
+            </div>
 
-  <div class="two-col">
+            <div class="card p-6 border-l-4 border-emerald-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500 uppercase">Progression Globale</p>
+                        <h3 id="avg-progress" class="text-3xl font-bold text-gray-800">0%</h3>
+                    </div>
+                    <div class="bg-emerald-100 p-3 rounded-full text-emerald-600">
+                        <i class="fas fa-percent"></i>
+                    </div>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2 mt-4">
+                    <div id="progress-bar" class="bg-emerald-500 h-2 rounded-full" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
 
-    <!-- Dernières actions -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">Dernières actions saisies</span>
-      </div>
-      <div class="card-body" id="recentList">
-        <div style="padding:20px;text-align:center;color:#bbb;font-size:13px;">Chargement…</div>
-      </div>
-    </div>
-
-    <!-- Par responsable -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">Actions par responsable</span>
-      </div>
-      <div class="card-body" id="respList">
-        <div style="padding:20px;text-align:center;color:#bbb;font-size:13px;">Chargement…</div>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<!-- Modal formulaire -->
-<div class="modal-overlay" id="modalOverlay">
-  <div class="modal">
-    <div class="modal-header">
-      <span class="modal-title">Nouvelle action réalisée</span>
-      <button class="btn-close" onclick="closeModal()">×</button>
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <h4 class="font-semibold text-gray-700 mb-2 flex items-center">
+                <i class="fas fa-info-circle mr-2 text-blue-500"></i> Note sur les données
+            </h4>
+            <p class="text-gray-600 text-sm">
+                Ce widget compile automatiquement les données de la table <code class="bg-gray-100 px-2 py-1 rounded">SAISIE_ACTIONS_REALISEES</code>. 
+                Les indicateurs reflètent l'ensemble des lignes présentes dans votre vue actuelle.
+            </p>
+        </div>
     </div>
 
-    <div class="step-indicator">
-      <div class="step active" id="step1"></div>
-      <div class="step" id="step2"></div>
-      <div class="step" id="step3"></div>
-      <div class="step" id="step4"></div>
-    </div>
+    <script>
+        // Initialisation de Grist
+        grist.ready({
+            requiredAccess: 'full'
+        });
 
-    <div class="success-banner" id="successBanner">
-      Action enregistrée avec succès !
-    </div>
+        // Lecture des données
+        grist.onRecords(function(records) {
+            // 1. On récupère toutes les actions uniques (basé sur le code de l'action)
+            const uniqueActions = new Set(records.map(r => r.action_ref).filter(Boolean));
+            const countActions = uniqueActions.size;
 
-    <div class="form-group">
-      <label class="form-label">Nom de l'action <span class="required">*</span></label>
-      <input type="text" id="fNom" placeholder="Ex : Formation biotechs, Copil FIBI…" />
-    </div>
+            // 2. On compte les sous-actions (lignes où sous_action_ref n'est pas vide)
+            const countSousActions = records.filter(r => r.sous_action_ref).length;
 
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Date <span class="required">*</span></label>
-        <input type="date" id="fDate" />
-      </div>
-      <div class="form-group">
-        <label class="form-label">Responsable <span class="required">*</span></label>
-        <select id="fResp">
-          <option value="">— Choisir —</option>
-        </select>
-      </div>
-    </div>
+            // 3. Calcul de la progression moyenne
+            // Note : Remplacez 'avancement' par le nom exact de votre colonne de % si différente
+            const validRecords = records.filter(r => typeof r.avancement === 'number');
+            let avgProgress = 0;
+            if (validRecords.length > 0) {
+                avgProgress = validRecords.reduce((acc, curr) => acc + curr.avancement, 0) / validRecords.length;
+            }
 
-    <div class="cascade-arrow">▼</div>
-
-    <div class="form-group">
-      <label class="form-label">Projet <span class="required">*</span></label>
-      <select id="fProjet" onchange="onProjetChange()">
-        <option value="">— Choisir un projet —</option>
-      </select>
-    </div>
-
-    <div class="cascade-arrow">▼</div>
-
-    <div class="form-group">
-      <label class="form-label">WP / Axe</label>
-      <select id="fWp" onchange="onWpChange()" disabled>
-        <option value="">— Choisir d'abord un projet —</option>
-      </select>
-    </div>
-
-    <div class="cascade-arrow">▼</div>
-
-    <div class="form-group">
-      <label class="form-label">Action</label>
-      <select id="fAction" onchange="updateSteps()" disabled>
-        <option value="">— Choisir d'abord un WP/Axe —</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label class="form-label">Commentaire</label>
-      <textarea id="fComment" placeholder="Notes, observations, contexte…"></textarea>
-    </div>
-
-    <div class="modal-footer">
-      <button class="btn-cancel" onclick="closeModal()">Annuler</button>
-      <button class="btn-submit" id="btnSubmit" onclick="submitAction()">Enregistrer</button>
-    </div>
-  </div>
-</div>
-
-<script>
-const AVATAR_COLORS = ['av-purple','av-teal','av-amber','av-coral','av-blue'];
-const BAR_COLORS = ['var(--c-purple-600)','var(--c-teal-600)','var(--c-amber-600)','var(--c-coral-600)','var(--c-blue-600)'];
-
-let gristData = { actions: [], projets: [], wps: [], actionsProjet: [], membres: [] };
-
-function initToday() {
-  const d = new Date();
-  document.getElementById('fDate').value = d.toISOString().split('T')[0];
-}
-
-function avatarInitials(name) {
-  if (!name) return '?';
-  const parts = name.trim().split(/\s+/);
-  return parts.length >= 2 ? (parts[0][0] + parts[1][0]).toUpperCase() : name.substring(0,2).toUpperCase();
-}
-
-function formatDate(ts) {
-  if (!ts) return '';
-  const d = new Date(ts * 1000);
-  return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
-}
-
-function getCurrentMonth() {
-  const n = new Date();
-  return { m: n.getMonth(), y: n.getFullYear() };
-}
-
-function renderKPIs() {
-  const total = gristData.actions.length;
-  document.getElementById('kpiTotal').textContent = total;
-
-  const { m, y } = getCurrentMonth();
-  const thisMois = gristData.actions.filter(a => {
-    const d = new Date(a.date_suivi_action * 1000);
-    return d.getMonth() === m && d.getFullYear() === y;
-  });
-  document.getElementById('kpiMois').textContent = thisMois.length;
-
-  const bea = gristData.actions.filter(a => String(a.projet_ref) === '1').length;
-  const fibi = gristData.actions.filter(a => String(a.projet_ref) === '2').length;
-  document.getElementById('kpiBea').textContent = bea;
-  document.getElementById('kpiFibi').textContent = fibi;
-}
-
-function renderRecent() {
-  const sorted = [...gristData.actions].sort((a, b) => b.date_suivi_action - a.date_suivi_action).slice(0, 7);
-  const cont = document.getElementById('recentList');
-  if (!sorted.length) { cont.innerHTML = '<div style="padding:20px;text-align:center;color:#bbb;font-size:13px;">Aucune action saisie</div>'; return; }
-  cont.innerHTML = sorted.map((a, i) => {
-    const col = AVATAR_COLORS[i % AVATAR_COLORS.length];
-    const resp = a.responsable_suivi_action_ref ? (gristData.membres.find(m => m.id === a.responsable_suivi_action_ref) || {}) : {};
-    const initials = avatarInitials(resp.Membre || a.Cree_par || '?');
-    const proj = String(a.projet_ref) === '1' ? 'BEA' : 'FIBI';
-    const badgeClass = proj === 'BEA' ? 'badge-bea' : 'badge-fibi';
-    const wp = a.gristHelper_Display5 || '';
-    const wpShort = wp.split(' - ')[0] || wp;
-    return `<div class="action-row">
-      <div class="action-avatar ${col}">${initials}</div>
-      <div class="action-info">
-        <div class="action-name">${a.nom_suivi_action || '(sans nom)'} <span class="badge ${badgeClass}">${proj}</span></div>
-        <div class="action-meta">${wpShort}</div>
-      </div>
-      <div class="action-date">${formatDate(a.date_suivi_action)}</div>
-    </div>`;
-  }).join('');
-}
-
-function renderResps() {
-  const counts = {};
-  gristData.actions.forEach(a => {
-    const m = gristData.membres.find(mb => mb.id === a.responsable_suivi_action_ref);
-    const name = m ? m.Membre : (a.Cree_par || 'Inconnu');
-    counts[name] = (counts[name] || 0) + 1;
-  });
-  const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
-  const max = sorted[0]?.[1] || 1;
-  const cont = document.getElementById('respList');
-  if (!sorted.length) { cont.innerHTML = '<div style="padding:20px;text-align:center;color:#bbb;font-size:13px;">Aucune donnée</div>'; return; }
-  cont.innerHTML = sorted.map(([name, count], i) => {
-    const pct = Math.round((count / max) * 100);
-    const color = BAR_COLORS[i % BAR_COLORS.length];
-    return `<div class="resp-row">
-      <div class="resp-top">
-        <span class="resp-name">${name}</span>
-        <span class="resp-count">${count} action${count > 1 ? 's' : ''}</span>
-      </div>
-      <div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${color}"></div></div>
-    </div>`;
-  }).join('');
-}
-
-function populateFormSelects() {
-  const rSelect = document.getElementById('fResp');
-  gristData.membres.forEach(m => {
-    const o = document.createElement('option');
-    o.value = m.id; o.textContent = m.Membre;
-    rSelect.appendChild(o);
-  });
-
-  const pSelect = document.getElementById('fProjet');
-  gristData.projets.forEach(p => {
-    const o = document.createElement('option');
-    o.value = p.id; o.textContent = p.lib_projet;
-    pSelect.appendChild(o);
-  });
-}
-
-function onProjetChange() {
-  const pid = document.getElementById('fProjet').value;
-  const wpSel = document.getElementById('fWp');
-  const aSel = document.getElementById('fAction');
-  wpSel.innerHTML = '<option value="">— Choisir un WP/Axe —</option>';
-  aSel.innerHTML = '<option value="">— Choisir d\'abord un WP/Axe —</option>';
-  wpSel.disabled = !pid;
-  aSel.disabled = true;
-  if (pid) {
-    gristData.wps.filter(w => String(w.projet_ref) === String(pid)).forEach(w => {
-      const o = document.createElement('option');
-      o.value = w.id; o.textContent = w.id_wp_axe_calc;
-      wpSel.appendChild(o);
-    });
-  }
-  updateSteps();
-}
-
-function onWpChange() {
-  const wid = document.getElementById('fWp').value;
-  const aSel = document.getElementById('fAction');
-  aSel.innerHTML = '<option value="">— Choisir une action —</option>';
-  aSel.disabled = !wid;
-  if (wid) {
-    gristData.actionsProjet.filter(a => String(a.wp_axe_ref) === String(wid)).forEach(a => {
-      const o = document.createElement('option');
-      o.value = a.id; o.textContent = a.id_action_calc;
-      aSel.appendChild(o);
-    });
-  }
-  updateSteps();
-}
-
-function updateSteps() {
-  const hasProjet = !!document.getElementById('fProjet').value;
-  const hasWp = !!document.getElementById('fWp').value;
-  const hasAction = !!document.getElementById('fAction').value;
-  const steps = ['step1','step2','step3','step4'];
-  const filled = [true, hasProjet, hasWp, hasAction];
-  steps.forEach((id, i) => {
-    const el = document.getElementById(id);
-    el.className = 'step ' + (filled[i+1] ? 'done' : (filled[i] ? 'active' : ''));
-  });
-  document.getElementById('step1').className = 'step ' + (hasProjet ? 'done' : 'active');
-}
-
-function openModal() {
-  document.getElementById('modalOverlay').classList.add('open');
-  document.getElementById('successBanner').classList.remove('show');
-  updateSteps();
-}
-
-function closeModal() {
-  document.getElementById('modalOverlay').classList.remove('open');
-}
-
-async function submitAction() {
-  const nom = document.getElementById('fNom').value.trim();
-  const date = document.getElementById('fDate').value;
-  const resp = document.getElementById('fResp').value;
-  const projet = document.getElementById('fProjet').value;
-
-  if (!nom || !date || !resp || !projet) {
-    alert('Merci de remplir les champs obligatoires (nom, date, responsable, projet).');
-    return;
-  }
-
-  const btn = document.getElementById('btnSubmit');
-  btn.disabled = true; btn.textContent = 'Enregistrement…';
-
-  try {
-    const record = {
-      nom_suivi_action: nom,
-      date_suivi_action: Math.floor(new Date(date).getTime() / 1000),
-      responsable_suivi_action_ref: parseInt(resp) || 0,
-      projet_ref: parseInt(projet) || 0,
-      wp_axe_ref: parseInt(document.getElementById('fWp').value) || 0,
-      action_ref: parseInt(document.getElementById('fAction').value) || 0,
-      Commentaires: document.getElementById('fComment').value,
-      Cree_par: 'widget_accueil'
-    };
-
-    await grist.docApi.applyUserActions([
-      ['AddRecord', 'SAISIE_actions_realisees', null, record]
-    ]);
-
-    document.getElementById('successBanner').classList.add('show');
-    document.getElementById('fNom').value = '';
-    document.getElementById('fComment').value = '';
-    document.getElementById('fProjet').value = '';
-    onProjetChange();
-    initToday();
-
-    setTimeout(() => {
-      closeModal();
-      document.getElementById('successBanner').classList.remove('show');
-    }, 1800);
-
-  } catch(e) {
-    console.error(e);
-    alert('Erreur lors de l\'enregistrement. Vérifiez les permissions Grist.');
-  }
-
-  btn.disabled = false; btn.textContent = 'Enregistrer';
-}
-
-grist.ready({ requiredAccess: 'full' });
-
-grist.onRecords(function(records, mappings) {});
-
-async function loadAll() {
-  try {
-    const [actions, projets, wps, actionsProjet, membres] = await Promise.all([
-      grist.docApi.fetchTable('SAISIE_actions_realisees'),
-      grist.docApi.fetchTable('PROJET_projet'),
-      grist.docApi.fetchTable('PROJET_axes'),
-      grist.docApi.fetchTable('PROJET_Actions'),
-      grist.docApi.fetchTable('CMQ_RH'),
-    ]);
-
-    function tableToRows(t) {
-      const keys = Object.keys(t);
-      const len = t[keys[0]]?.length || 0;
-      return Array.from({length: len}, (_, i) => {
-        const row = {};
-        keys.forEach(k => row[k] = t[k][i]);
-        return row;
-      });
-    }
-
-    gristData.actions = tableToRows(actions);
-    gristData.projets = tableToRows(projets);
-    gristData.wps = tableToRows(wps);
-    gristData.actionsProjet = tableToRows(actionsProjet);
-    gristData.membres = tableToRows(membres);
-
-    renderKPIs();
-    renderRecent();
-    renderResps();
-    populateFormSelects();
-
-  } catch(e) {
-    console.warn('Mode démo (hors Grist) :', e.message);
-    loadDemoData();
-  }
-}
-
-function loadDemoData() {
-  gristData = {
-    projets: [
-      {id:1, lib_projet:'PIA3 - BEA', cod_projet:'BEA'},
-      {id:2, lib_projet:'PIA4 - FIBI', cod_projet:'FIBI'}
-    ],
-    wps: [
-      {id:1,cod_wp_axe:'AXE1',id_wp_axe_calc:'AXE1 - Bâtiment Totem',projet_ref:1},
-      {id:4,cod_wp_axe:'AXE4',id_wp_axe_calc:'AXE4 - Ouverture sociétale',projet_ref:1},
-      {id:6,cod_wp_axe:'WP1',id_wp_axe_calc:'WP1 - Excellence professionnelle',projet_ref:2},
-      {id:7,cod_wp_axe:'WP2',id_wp_axe_calc:'WP2 - Excellence académique',projet_ref:2},
-      {id:10,cod_wp_axe:'WP5',id_wp_axe_calc:'WP5 - Pilotage',projet_ref:2},
-    ],
-    actionsProjet: [
-      {id:1,id_action_calc:'WP1.01 - Adaptation des formations',wp_axe_ref:6},
-      {id:2,id_action_calc:'WP2.01 - Création de formations',wp_axe_ref:7},
-      {id:8,id_action_calc:'WP5.01 - Pilotage',wp_axe_ref:10},
-    ],
-    membres: [
-      {id:1,Membre:'Nathalie G.'},{id:2,Membre:'Claire P.'},{id:3,Membre:'Adem K.'},
-      {id:5,Membre:'Clarisse M.'},{id:9,Membre:'Frédérick F.'},{id:10,Membre:'Camille G.'}
-    ],
-    actions: [
-      {id:2,nom_suivi_action:'Olympiades',date_suivi_action:1764892800,responsable_suivi_action_ref:3,projet_ref:1,Cree_par:'adem',gristHelper_Display5:'AXE4 - Ouverture sociétale'},
-      {id:3,nom_suivi_action:'JDD',date_suivi_action:1773878400,responsable_suivi_action_ref:5,projet_ref:1,Cree_par:'clarisse',gristHelper_Display5:'AXE4 - Ouverture sociétale'},
-      {id:4,nom_suivi_action:'Art et Bioeco',date_suivi_action:1774396800,responsable_suivi_action_ref:10,projet_ref:1,Cree_par:'camille',gristHelper_Display5:'AXE4 - Ouverture sociétale'},
-      {id:5,nom_suivi_action:'COPIL',date_suivi_action:1773014400,responsable_suivi_action_ref:2,projet_ref:2,Cree_par:'claire',gristHelper_Display5:'WP5 - Pilotage'},
-      {id:6,nom_suivi_action:'Forum des métiers du vivant',date_suivi_action:1772668800,responsable_suivi_action_ref:9,projet_ref:2,Cree_par:'frederick',gristHelper_Display5:'WP4 - Attractivité'},
-      {id:7,nom_suivi_action:'Olympiades inter-collèges',date_suivi_action:1769644800,responsable_suivi_action_ref:3,projet_ref:2,Cree_par:'adem',gristHelper_Display5:'WP2 - Excellence académique'},
-      {id:8,nom_suivi_action:'Colorations',date_suivi_action:1775001600,responsable_suivi_action_ref:3,projet_ref:2,Cree_par:'adem',gristHelper_Display5:'WP1 - Excellence professionnelle'},
-    ]
-  };
-  renderKPIs(); renderRecent(); renderResps(); populateFormSelects();
-}
-
-initToday();
-loadAll();
-</script>
+            // 4. Mise à jour de l'interface
+            document.getElementById('total-actions').innerText = countActions;
+            document.getElementById('total-sous-actions').innerText = countSousActions;
+            document.getElementById('avg-progress').innerText = Math.round(avgProgress) + '%';
+            document.getElementById('progress-bar').style.width = Math.min(100, avgProgress) + '%';
+        });
+    </script>
 </body>
 </html>
