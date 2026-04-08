@@ -3,654 +3,654 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CMQ – Accueil saisie</title>
+<title>CMQ – Accueil</title>
 <script src="https://docs.getgrist.com/grist-plugin-api.js"></script>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --purple-50:#EEEDFE;--purple-200:#AFA9EC;--purple-600:#534AB7;--purple-800:#3C3489;
+  --teal-50:#E1F5EE;--teal-200:#5DCAA5;--teal-600:#0F6E56;--teal-800:#085041;
+  --amber-50:#FAEEDA;--amber-200:#FAC775;--amber-600:#854F0B;--amber-800:#633806;
+  --blue-50:#E6F1FB;--blue-200:#85B7EB;--blue-600:#185FA5;--blue-800:#0C447C;
+  --coral-50:#FAECE7;--coral-200:#F0997B;--coral-600:#993C1D;--coral-800:#712B13;
+  --r:10px;--rsm:6px;
+  --font:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+}
+body{font-family:var(--font);background:#f4f3f0;color:#1a1a1a;min-height:100vh}
 
-  :root {
-    --c-purple-50: #EEEDFE; --c-purple-200: #AFA9EC; --c-purple-600: #534AB7; --c-purple-800: #3C3489;
-    --c-teal-50: #E1F5EE; --c-teal-200: #5DCAA5; --c-teal-600: #0F6E56; --c-teal-800: #085041;
-    --c-amber-50: #FAEEDA; --c-amber-200: #FAC775; --c-amber-600: #854F0B; --c-amber-800: #633806;
-    --c-blue-50: #E6F1FB; --c-blue-200: #85B7EB; --c-blue-600: #185FA5; --c-blue-800: #0C447C;
-    --c-coral-50: #FAECE7; --c-coral-200: #F0997B; --c-coral-600: #993C1D; --c-coral-800: #712B13;
-    --radius: 10px;
-    --radius-sm: 6px;
-    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  }
+.header{background:#fff;border-bottom:.5px solid #ddd;padding:14px 24px;display:flex;align-items:center;justify-content:space-between}
+.header-left{display:flex;align-items:center;gap:10px}
+.logo{width:34px;height:34px;border-radius:8px;background:var(--purple-600);display:flex;align-items:center;justify-content:center;font-size:15px;color:#fff;font-weight:700}
+.header h1{font-size:15px;font-weight:600}
+.header p{font-size:11px;color:#999;margin-top:1px}
+.btn-add{background:var(--purple-600);color:#fff;border:none;border-radius:var(--rsm);padding:9px 18px;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background .15s}
+.btn-add:hover{background:var(--purple-800)}
 
-  body {
-    font-family: var(--font);
-    background: #f4f3f0;
-    color: #1a1a1a;
-    min-height: 100vh;
-  }
+.main{padding:20px 24px;max-width:1100px}
 
-  .header {
-    background: #fff;
-    border-bottom: 0.5px solid #ddd;
-    padding: 14px 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .header-left { display: flex; align-items: center; gap: 10px; }
-  .logo-badge {
-    width: 34px; height: 34px; border-radius: 8px;
-    background: var(--c-purple-600); display: flex; align-items: center;
-    justify-content: center; font-size: 16px; color: #fff; font-weight: 600;
-  }
-  .header h1 { font-size: 16px; font-weight: 600; color: #1a1a1a; }
-  .header p { font-size: 12px; color: #888; margin-top: 1px; }
+/* ── TABS ── */
+.tabs{display:flex;gap:0;border-bottom:.5px solid #e0e0e0;margin-bottom:20px}
+.tab{padding:9px 18px;font-size:13px;color:#888;cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;background:none;border-top:none;border-left:none;border-right:none;font-family:var(--font)}
+.tab.active{color:var(--purple-600);border-bottom:2px solid var(--purple-600);font-weight:500}
+.tab-panel{display:none}.tab-panel.active{display:block}
 
-  .btn-add {
-    background: var(--c-purple-600); color: #fff;
-    border: none; border-radius: var(--radius-sm);
-    padding: 9px 18px; font-size: 14px; font-weight: 500;
-    cursor: pointer; display: flex; align-items: center; gap: 7px;
-    transition: background 0.15s;
-  }
-  .btn-add:hover { background: var(--c-purple-800); }
-  .btn-add .plus { font-size: 18px; line-height: 1; }
+/* ── KPI SECTION ── */
+.kpi-config-bar{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.kpi-config-bar span{font-size:12px;color:#888}
+.indic-chip{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:20px;font-size:12px;cursor:pointer;border:.5px solid #ddd;background:#fff;transition:all .15s;user-select:none}
+.indic-chip.selected{background:var(--purple-50);border-color:var(--purple-200);color:var(--purple-800);font-weight:500}
+.indic-chip .chip-x{font-size:14px;color:#bbb;line-height:1}
 
-  .main { padding: 20px 24px; max-width: 1100px; }
+.kpi-grid{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:20px}
+.kpi-card{background:#fff;border-radius:var(--r);border:.5px solid #e0e0e0;padding:14px 18px;min-width:170px;flex:1}
+.kpi-label{font-size:11px;color:#999;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px}
+.kpi-val{font-size:30px;font-weight:600;color:#1a1a1a;line-height:1}
+.kpi-sub{font-size:11px;color:#bbb;margin-top:3px}
+.kpi-empty{background:#fafafa;border:.5px dashed #ddd;border-radius:var(--r);padding:20px;text-align:center;color:#bbb;font-size:13px;width:100%}
 
-  /* KPI cards */
-  .kpi-row {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
-    margin-bottom: 20px;
-  }
-  .kpi {
-    background: #fff;
-    border-radius: var(--radius);
-    border: 0.5px solid #e0e0e0;
-    padding: 14px 16px;
-  }
-  .kpi-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
-  .kpi-value { font-size: 28px; font-weight: 600; color: #1a1a1a; line-height: 1; }
-  .kpi-sub { font-size: 12px; color: #aaa; margin-top: 4px; }
-  .kpi-dot {
-    display: inline-block; width: 8px; height: 8px;
-    border-radius: 50%; margin-right: 5px;
-  }
+/* ── TWO COL ── */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.card{background:#fff;border-radius:var(--r);border:.5px solid #e0e0e0;overflow:hidden}
+.card-header{padding:11px 16px;border-bottom:.5px solid #f0f0f0;display:flex;align-items:center;justify-content:space-between}
+.card-title{font-size:13px;font-weight:600;color:#444}
 
-  /* Projets pills */
-  .projets-row { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-  .projet-pill {
-    border-radius: 20px; padding: 6px 14px; font-size: 13px; font-weight: 500;
-    border: 0.5px solid;
-  }
-  .pill-bea { background: var(--c-purple-50); color: var(--c-purple-800); border-color: var(--c-purple-200); }
-  .pill-fibi { background: var(--c-teal-50); color: var(--c-teal-800); border-color: var(--c-teal-200); }
+.action-row{display:flex;align-items:flex-start;padding:10px 16px;gap:11px;border-bottom:.5px solid #f5f5f5;cursor:pointer;transition:background .1s}
+.action-row:last-child{border-bottom:none}
+.action-row:hover{background:#fafafa}
+.av{width:30px;height:30px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600}
+.av-0{background:var(--purple-50);color:var(--purple-600)}
+.av-1{background:var(--teal-50);color:var(--teal-600)}
+.av-2{background:var(--amber-50);color:var(--amber-600)}
+.av-3{background:var(--coral-50);color:var(--coral-600)}
+.av-4{background:var(--blue-50);color:var(--blue-600)}
+.action-info{flex:1;min-width:0}
+.action-name{font-size:13px;font-weight:500;color:#222;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.action-meta{font-size:11px;color:#999;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.action-date{font-size:11px;color:#bbb;flex-shrink:0}
+.badge{display:inline-block;font-size:10px;font-weight:500;padding:2px 7px;border-radius:10px;margin-left:5px}
+.b-bea{background:var(--purple-50);color:var(--purple-800)}
+.b-fibi{background:var(--teal-50);color:var(--teal-800)}
 
-  /* Two-column layout */
-  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+.resp-row{padding:9px 16px;border-bottom:.5px solid #f5f5f5}
+.resp-row:last-child{border-bottom:none}
+.resp-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.resp-name{font-size:13px;color:#333;font-weight:500}
+.resp-count{font-size:12px;color:#999}
+.bar-bg{background:#f0f0f0;border-radius:3px;height:5px}
+.bar-fill{height:5px;border-radius:3px;transition:width .5s ease}
 
-  .card {
-    background: #fff;
-    border-radius: var(--radius);
-    border: 0.5px solid #e0e0e0;
-    overflow: hidden;
-  }
-  .card-header {
-    padding: 12px 16px;
-    border-bottom: 0.5px solid #f0f0f0;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .card-title { font-size: 13px; font-weight: 600; color: #444; }
-  .card-body { padding: 0; }
+/* ── MODAL ── */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.38);z-index:100;align-items:center;justify-content:center}
+.overlay.open{display:flex}
+.modal{background:#fff;border-radius:14px;width:560px;max-width:95vw;max-height:92vh;overflow-y:auto;padding:26px;box-shadow:0 8px 40px rgba(0,0,0,.18)}
+.modal-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.modal-title{font-size:16px;font-weight:600}
+.btn-x{background:none;border:none;font-size:22px;cursor:pointer;color:#aaa;padding:0 4px;line-height:1}
 
-  /* Actions récentes */
-  .action-row {
-    display: flex; align-items: flex-start;
-    padding: 11px 16px; gap: 12px;
-    border-bottom: 0.5px solid #f5f5f5;
-    cursor: pointer; transition: background 0.1s;
-  }
-  .action-row:last-child { border-bottom: none; }
-  .action-row:hover { background: #fafafa; }
-  .action-avatar {
-    width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 11px; font-weight: 600;
-  }
-  .av-purple { background: var(--c-purple-50); color: var(--c-purple-600); }
-  .av-teal   { background: var(--c-teal-50);   color: var(--c-teal-600); }
-  .av-amber  { background: var(--c-amber-50);  color: var(--c-amber-600); }
-  .av-coral  { background: var(--c-coral-50);  color: var(--c-coral-600); }
-  .av-blue   { background: var(--c-blue-50);   color: var(--c-blue-600); }
+/* Steps bar */
+.steps{display:flex;gap:6px;margin:14px 0 20px}
+.step{flex:1;height:3px;border-radius:2px;background:#eee;transition:background .3s}
+.step.s-active{background:var(--purple-600)}
+.step.s-done{background:var(--teal-200)}
 
-  .action-info { flex: 1; min-width: 0; }
-  .action-name { font-size: 13px; font-weight: 500; color: #222; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .action-meta { font-size: 11px; color: #999; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .action-date { font-size: 11px; color: #bbb; flex-shrink: 0; }
-  .badge {
-    display: inline-block; font-size: 10px; font-weight: 500;
-    padding: 2px 7px; border-radius: 10px;
-  }
-  .badge-bea { background: var(--c-purple-50); color: var(--c-purple-800); }
-  .badge-fibi { background: var(--c-teal-50); color: var(--c-teal-800); }
+.section-title{font-size:11px;font-weight:600;color:#aaa;text-transform:uppercase;letter-spacing:.06em;margin:18px 0 10px}
+.section-title:first-of-type{margin-top:0}
 
-  /* Barres par responsable */
-  .resp-row { padding: 10px 16px; border-bottom: 0.5px solid #f5f5f5; }
-  .resp-row:last-child { border-bottom: none; }
-  .resp-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
-  .resp-name { font-size: 13px; color: #333; font-weight: 500; }
-  .resp-count { font-size: 12px; color: #999; }
-  .bar-bg { background: #f0f0f0; border-radius: 3px; height: 5px; }
-  .bar-fill { height: 5px; border-radius: 3px; transition: width 0.5s ease; }
+.fg{margin-bottom:13px}
+.fl{display:block;font-size:12px;font-weight:500;color:#555;margin-bottom:4px}
+.req{color:var(--coral-600);margin-left:2px}
+select,input[type=text],input[type=date],input[type=number],textarea{width:100%;padding:9px 11px;border:1px solid #ddd;border-radius:var(--rsm);font-size:13px;color:#222;background:#fff;font-family:var(--font);transition:border-color .15s}
+select:focus,input:focus,textarea:focus{outline:none;border-color:var(--purple-600);box-shadow:0 0 0 3px var(--purple-50)}
+select:disabled{background:#f8f8f8;color:#bbb;cursor:not-allowed}
+textarea{resize:vertical;min-height:65px}
+input[type=number]{-moz-appearance:textfield}
 
-  /* Formulaire modal */
-  .modal-overlay {
-    display: none; position: fixed; inset: 0;
-    background: rgba(0,0,0,0.35); z-index: 100;
-    align-items: center; justify-content: center;
-  }
-  .modal-overlay.open { display: flex; }
-  .modal {
-    background: #fff; border-radius: 14px;
-    width: 520px; max-width: 95vw;
-    padding: 24px; box-shadow: 0 8px 40px rgba(0,0,0,0.18);
-  }
-  .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-  .modal-title { font-size: 16px; font-weight: 600; color: #1a1a1a; }
-  .btn-close { background: none; border: none; font-size: 20px; cursor: pointer; color: #999; padding: 0 4px; }
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cascade-sep{text-align:center;color:#ddd;font-size:11px;letter-spacing:3px;margin:-4px 0 8px}
 
-  .form-group { margin-bottom: 14px; }
-  .form-label { display: block; font-size: 12px; font-weight: 500; color: #555; margin-bottom: 5px; }
-  .form-label .required { color: var(--c-coral-600); margin-left: 3px; }
-  select, input[type="text"], input[type="date"], textarea {
-    width: 100%; padding: 9px 11px; border: 1px solid #ddd;
-    border-radius: var(--radius-sm); font-size: 13px; color: #222;
-    background: #fff; font-family: var(--font);
-    transition: border-color 0.15s;
-  }
-  select:focus, input:focus, textarea:focus {
-    outline: none; border-color: var(--c-purple-600);
-    box-shadow: 0 0 0 3px var(--c-purple-50);
-  }
-  select:disabled { background: #f8f8f8; color: #bbb; }
-  textarea { resize: vertical; min-height: 70px; }
+/* Indicateurs dynamiques */
+.indic-block{background:#f9f8ff;border:1px solid var(--purple-200);border-radius:var(--rsm);padding:14px;margin-top:4px}
+.indic-block .indic-title{font-size:12px;font-weight:600;color:var(--purple-800);margin-bottom:10px}
+.indic-field{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.indic-field:last-child{margin-bottom:0}
+.indic-field label{flex:1;font-size:13px;color:#333}
+.indic-field .req-dot{color:var(--coral-600);margin-right:4px;font-size:14px}
+.indic-field input{width:110px;flex-shrink:0}
+.indic-empty{font-size:13px;color:#bbb;font-style:italic;padding:6px 0}
 
-  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.modal-ft{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;padding-top:14px;border-top:.5px solid #f0f0f0}
+.btn-cancel{background:none;border:1px solid #ddd;color:#666;border-radius:var(--rsm);padding:9px 18px;font-size:13px;cursor:pointer}
+.btn-cancel:hover{background:#f8f8f8}
+.btn-submit{background:var(--purple-600);color:#fff;border:none;border-radius:var(--rsm);padding:9px 22px;font-size:13px;font-weight:500;cursor:pointer;transition:background .15s}
+.btn-submit:hover{background:var(--purple-800)}
+.btn-submit:disabled{background:#ccc;cursor:not-allowed}
 
-  .cascade-arrow {
-    text-align: center; color: #ccc; font-size: 12px;
-    margin: -6px 0 8px; letter-spacing: 2px;
-  }
+.toast{display:none;background:var(--teal-50);color:var(--teal-800);border:1px solid var(--teal-200);border-radius:var(--rsm);padding:10px 14px;font-size:13px;margin-bottom:14px}
+.toast.show{display:block}
 
-  .modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; padding-top: 16px; border-top: 0.5px solid #f0f0f0; }
-  .btn-cancel {
-    background: none; border: 1px solid #ddd; color: #666;
-    border-radius: var(--radius-sm); padding: 9px 18px; font-size: 13px; cursor: pointer;
-  }
-  .btn-cancel:hover { background: #f8f8f8; }
-  .btn-submit {
-    background: var(--c-purple-600); color: #fff; border: none;
-    border-radius: var(--radius-sm); padding: 9px 22px; font-size: 13px; font-weight: 500;
-    cursor: pointer; transition: background 0.15s;
-  }
-  .btn-submit:hover { background: var(--c-purple-800); }
-  .btn-submit:disabled { background: #ccc; cursor: not-allowed; }
-
-  .success-banner {
-    display: none; background: var(--c-teal-50); color: var(--c-teal-800);
-    border: 1px solid var(--c-teal-200); border-radius: var(--radius-sm);
-    padding: 10px 14px; font-size: 13px; margin-bottom: 14px;
-  }
-  .success-banner.show { display: block; }
-
-  .step-indicator {
-    display: flex; gap: 6px; margin-bottom: 18px;
-  }
-  .step {
-    flex: 1; height: 3px; border-radius: 2px; background: #eee;
-    transition: background 0.3s;
-  }
-  .step.active { background: var(--c-purple-600); }
-  .step.done { background: var(--c-teal-200); }
-
-  @media (max-width: 700px) {
-    .kpi-row { grid-template-columns: 1fr 1fr; }
-    .two-col { grid-template-columns: 1fr; }
-    .form-row { grid-template-columns: 1fr; }
-  }
+@media(max-width:700px){.two-col{grid-template-columns:1fr}.form-row{grid-template-columns:1fr}.kpi-card{min-width:140px}}
 </style>
 </head>
 <body>
 
 <div class="header">
   <div class="header-left">
-    <div class="logo-badge">C</div>
+    <div class="logo">C</div>
     <div>
       <h1>CMQ Bioéco — Suivi des actions</h1>
-      <p>Tableau de bord équipe</p>
+      <p id="headerSub">Chargement…</p>
     </div>
   </div>
-  <button class="btn-add" onclick="openModal()">
-    <span class="plus">+</span> Ajouter une action
-  </button>
+  <button class="btn-add" onclick="openModal()">+ Ajouter une action</button>
 </div>
 
 <div class="main">
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('dashboard')">Tableau de bord</button>
+    <button class="tab" onclick="switchTab('recentes')">Dernières actions</button>
+  </div>
 
-  <!-- KPIs -->
-  <div class="kpi-row" id="kpiRow">
-    <div class="kpi">
-      <div class="kpi-label">Actions totales</div>
-      <div class="kpi-value" id="kpiTotal">—</div>
-      <div class="kpi-sub">dans la base</div>
+  <!-- TAB DASHBOARD -->
+  <div class="tab-panel active" id="tab-dashboard">
+
+    <div class="kpi-config-bar">
+      <span>Indicateurs affichés :</span>
+      <div id="chipContainer"></div>
+      <button class="indic-chip" onclick="openChipSelector()" style="border-style:dashed;color:#888">+ Ajouter</button>
     </div>
-    <div class="kpi">
-      <div class="kpi-label">Ce mois-ci</div>
-      <div class="kpi-value" id="kpiMois">—</div>
-      <div class="kpi-sub" id="kpiMoisLabel">actions saisies</div>
+
+    <div class="kpi-grid" id="kpiGrid">
+      <div class="kpi-empty">Choisissez des indicateurs ci-dessus pour afficher vos données</div>
     </div>
-    <div class="kpi">
-      <div class="kpi-label">Projet BEA</div>
-      <div class="kpi-value" id="kpiBea">—</div>
-      <div class="kpi-sub"><span class="kpi-dot" style="background:var(--c-purple-600)"></span>PIA3</div>
-    </div>
-    <div class="kpi">
-      <div class="kpi-label">Projet FIBI</div>
-      <div class="kpi-value" id="kpiFibi">—</div>
-      <div class="kpi-sub"><span class="kpi-dot" style="background:var(--c-teal-600)"></span>PIA4</div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Actions par responsable</span></div>
+        <div id="respList"><div style="padding:18px;text-align:center;color:#bbb;font-size:13px">Chargement…</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Répartition par projet</span></div>
+        <div id="projetList"><div style="padding:18px;text-align:center;color:#bbb;font-size:13px">Chargement…</div></div>
+      </div>
     </div>
   </div>
 
-  <div class="two-col">
-
-    <!-- Dernières actions -->
+  <!-- TAB RÉCENTES -->
+  <div class="tab-panel" id="tab-recentes">
     <div class="card">
-      <div class="card-header">
-        <span class="card-title">Dernières actions saisies</span>
-      </div>
-      <div class="card-body" id="recentList">
-        <div style="padding:20px;text-align:center;color:#bbb;font-size:13px;">Chargement…</div>
-      </div>
+      <div class="card-header"><span class="card-title">Dernières actions saisies</span></div>
+      <div id="recentList"><div style="padding:18px;text-align:center;color:#bbb;font-size:13px">Chargement…</div></div>
     </div>
-
-    <!-- Par responsable -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">Actions par responsable</span>
-      </div>
-      <div class="card-body" id="respList">
-        <div style="padding:20px;text-align:center;color:#bbb;font-size:13px;">Chargement…</div>
-      </div>
-    </div>
-
   </div>
 </div>
 
-<!-- Modal formulaire -->
-<div class="modal-overlay" id="modalOverlay">
-  <div class="modal">
-    <div class="modal-header">
-      <span class="modal-title">Nouvelle action réalisée</span>
-      <button class="btn-close" onclick="closeModal()">×</button>
-    </div>
-
-    <div class="step-indicator">
-      <div class="step active" id="step1"></div>
-      <div class="step" id="step2"></div>
-      <div class="step" id="step3"></div>
-      <div class="step" id="step4"></div>
-    </div>
-
-    <div class="success-banner" id="successBanner">
-      Action enregistrée avec succès !
-    </div>
-
-    <div class="form-group">
-      <label class="form-label">Nom de l'action <span class="required">*</span></label>
-      <input type="text" id="fNom" placeholder="Ex : Formation biotechs, Copil FIBI…" />
-    </div>
-
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Date <span class="required">*</span></label>
-        <input type="date" id="fDate" />
-      </div>
-      <div class="form-group">
-        <label class="form-label">Responsable <span class="required">*</span></label>
-        <select id="fResp">
-          <option value="">— Choisir —</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="cascade-arrow">▼</div>
-
-    <div class="form-group">
-      <label class="form-label">Projet <span class="required">*</span></label>
-      <select id="fProjet" onchange="onProjetChange()">
-        <option value="">— Choisir un projet —</option>
-      </select>
-    </div>
-
-    <div class="cascade-arrow">▼</div>
-
-    <div class="form-group">
-      <label class="form-label">WP / Axe</label>
-      <select id="fWp" onchange="onWpChange()" disabled>
-        <option value="">— Choisir d'abord un projet —</option>
-      </select>
-    </div>
-
-    <div class="cascade-arrow">▼</div>
-
-    <div class="form-group">
-      <label class="form-label">Action</label>
-      <select id="fAction" onchange="updateSteps()" disabled>
-        <option value="">— Choisir d'abord un WP/Axe —</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label class="form-label">Commentaire</label>
-      <textarea id="fComment" placeholder="Notes, observations, contexte…"></textarea>
-    </div>
-
-    <div class="modal-footer">
-      <button class="btn-cancel" onclick="closeModal()">Annuler</button>
-      <button class="btn-submit" id="btnSubmit" onclick="submitAction()">Enregistrer</button>
-    </div>
+<!-- MODAL SAISIE -->
+<div class="overlay" id="overlay">
+<div class="modal">
+  <div class="modal-hd">
+    <span class="modal-title">Nouvelle action réalisée</span>
+    <button class="btn-x" onclick="closeModal()">×</button>
   </div>
+  <div class="steps">
+    <div class="step s-active" id="st0"></div>
+    <div class="step" id="st1"></div>
+    <div class="step" id="st2"></div>
+    <div class="step" id="st3"></div>
+  </div>
+  <div class="toast" id="toast">Action enregistrée avec succès !</div>
+
+  <div class="section-title">Informations générales</div>
+  <div class="fg"><label class="fl">Nom de l'action <span class="req">*</span></label>
+    <input type="text" id="fNom" placeholder="Ex : Forum Bioéco, COPIL FIBI…"></div>
+  <div class="form-row">
+    <div class="fg"><label class="fl">Date <span class="req">*</span></label>
+      <input type="date" id="fDate"></div>
+    <div class="fg"><label class="fl">Responsable <span class="req">*</span></label>
+      <select id="fResp"><option value="">— Choisir —</option></select></div>
+  </div>
+
+  <div class="section-title">Rattachement projet</div>
+  <div class="fg"><label class="fl">Projet <span class="req">*</span></label>
+    <select id="fProjet" onchange="onProjetChange()"><option value="">— Choisir un projet —</option></select></div>
+  <div class="cascade-sep">▼</div>
+  <div class="fg"><label class="fl">WP / Axe</label>
+    <select id="fWp" onchange="onWpChange()" disabled><option value="">— Choisir d'abord un projet —</option></select></div>
+  <div class="cascade-sep">▼</div>
+  <div class="fg"><label class="fl">Action</label>
+    <select id="fAction" onchange="onActionChange()" disabled><option value="">— Choisir d'abord un WP/Axe —</option></select></div>
+  <div class="cascade-sep">▼</div>
+  <div class="fg"><label class="fl">Sous-action</label>
+    <select id="fSousAction" onchange="onSousActionChange()" disabled><option value="">— Choisir d'abord une action —</option></select></div>
+
+  <div class="section-title" id="indicSection" style="display:none">Indicateurs</div>
+  <div id="indicContainer"></div>
+
+  <div class="section-title">Commentaire</div>
+  <div class="fg"><textarea id="fComment" placeholder="Notes, contexte, observations…"></textarea></div>
+
+  <div class="modal-ft">
+    <button class="btn-cancel" onclick="closeModal()">Annuler</button>
+    <button class="btn-submit" id="btnSubmit" onclick="submitAction()">Enregistrer</button>
+  </div>
+</div>
+</div>
+
+<!-- MODAL CHOIX INDICATEURS -->
+<div class="overlay" id="chipOverlay">
+<div class="modal" style="max-width:440px">
+  <div class="modal-hd">
+    <span class="modal-title">Choisir les indicateurs du tableau de bord</span>
+    <button class="btn-x" onclick="closeChipSelector()">×</button>
+  </div>
+  <p style="font-size:13px;color:#888;margin:8px 0 16px">Sélectionnez les indicateurs que vous voulez voir agrégés sur votre tableau de bord.</p>
+  <div id="allChips" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+  <div class="modal-ft">
+    <button class="btn-cancel" onclick="closeChipSelector()">Fermer</button>
+  </div>
+</div>
 </div>
 
 <script>
-const AVATAR_COLORS = ['av-purple','av-teal','av-amber','av-coral','av-blue'];
-const BAR_COLORS = ['var(--c-purple-600)','var(--c-teal-600)','var(--c-amber-600)','var(--c-coral-600)','var(--c-blue-600)'];
+const AVCOLS = ['av-0','av-1','av-2','av-3','av-4'];
+const BARCOLS = ['var(--purple-600)','var(--teal-600)','var(--amber-600)','var(--coral-600)','var(--blue-600)'];
 
-let gristData = { actions: [], projets: [], wps: [], actionsProjet: [], membres: [] };
+let DB = { actions:[], projets:[], wps:[], actionsP:[], sousActions:[], membres:[], indicConfig:[], indicValeurs:[], etabs:[] };
+let selectedIndics = JSON.parse(localStorage.getItem('cmq_indics') || '[]');
 
-function initToday() {
-  const d = new Date();
-  document.getElementById('fDate').value = d.toISOString().split('T')[0];
+function tableToRows(t) {
+  if (!t) return [];
+  const keys = Object.keys(t), len = t[keys[0]]?.length||0;
+  return Array.from({length:len},(_,i)=>{ const r={}; keys.forEach(k=>r[k]=t[k][i]); return r; });
 }
 
-function avatarInitials(name) {
-  if (!name) return '?';
-  const parts = name.trim().split(/\s+/);
-  return parts.length >= 2 ? (parts[0][0] + parts[1][0]).toUpperCase() : name.substring(0,2).toUpperCase();
-}
+function initToday() { document.getElementById('fDate').value = new Date().toISOString().split('T')[0]; }
 
-function formatDate(ts) {
+function fmtDate(ts) {
   if (!ts) return '';
-  const d = new Date(ts * 1000);
-  return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
+  return new Date(ts*1000).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'});
 }
 
-function getCurrentMonth() {
-  const n = new Date();
-  return { m: n.getMonth(), y: n.getFullYear() };
+function initials(name) {
+  if (!name) return '?';
+  const p = name.trim().split(/\s+/);
+  return p.length>=2?(p[0][0]+p[1][0]).toUpperCase():name.substring(0,2).toUpperCase();
 }
+
+function switchTab(t) {
+  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',['dashboard','recentes'][i]===t));
+  document.querySelectorAll('.tab-panel').forEach(el=>el.classList.remove('active'));
+  document.getElementById('tab-'+t).classList.add('active');
+}
+
+/* ── INDICATEURS DASHBOARD ── */
+function saveIndics() { localStorage.setItem('cmq_indics', JSON.stringify(selectedIndics)); }
+
+function getAllIndicLabels() {
+  const map = {};
+  DB.indicConfig.forEach(c => { if (!map[c.Code_indicateur]) map[c.Code_indicateur] = c.libelle_indicateurs; });
+  return map;
+}
+
+function renderChips() {
+  const map = getAllIndicLabels();
+  const cont = document.getElementById('chipContainer');
+  cont.innerHTML = '';
+  selectedIndics.forEach(code => {
+    const ch = document.createElement('div');
+    ch.className = 'indic-chip selected';
+    ch.innerHTML = `${map[code]||code} <span class="chip-x" onclick="removeIndic('${code}')">×</span>`;
+    cont.appendChild(ch);
+  });
+  renderKPIs();
+}
+
+function removeIndic(code) {
+  selectedIndics = selectedIndics.filter(c=>c!==code);
+  saveIndics(); renderChips();
+}
+
+function openChipSelector() {
+  const map = getAllIndicLabels();
+  const cont = document.getElementById('allChips');
+  cont.innerHTML = '';
+  Object.entries(map).forEach(([code, label]) => {
+    const ch = document.createElement('div');
+    ch.className = 'indic-chip' + (selectedIndics.includes(code)?' selected':'');
+    ch.textContent = label;
+    ch.onclick = () => {
+      if (selectedIndics.includes(code)) {
+        selectedIndics = selectedIndics.filter(c=>c!==code);
+        ch.classList.remove('selected');
+      } else {
+        selectedIndics.push(code);
+        ch.classList.add('selected');
+      }
+      saveIndics(); renderChips();
+    };
+    cont.appendChild(ch);
+  });
+  document.getElementById('chipOverlay').classList.add('open');
+}
+function closeChipSelector() { document.getElementById('chipOverlay').classList.remove('open'); }
 
 function renderKPIs() {
-  const total = gristData.actions.length;
-  document.getElementById('kpiTotal').textContent = total;
+  const grid = document.getElementById('kpiGrid');
+  if (!selectedIndics.length) {
+    grid.innerHTML = '<div class="kpi-empty">Choisissez des indicateurs ci-dessus pour afficher vos données</div>';
+    return;
+  }
+  const map = getAllIndicLabels();
+  // Agréger : pour chaque code d'indicateur, sommer les valeurs dans indicValeurs
+  // Structure BDD_SAISIE : Indicateurs = ref config_id, valeur numérique dans colonne "Indicateurs" (la valeur)
+  // On va aussi compter établissements depuis SAISIE_etablissements
+  const totals = {};
+  selectedIndics.forEach(code => { totals[code] = 0; });
 
-  const { m, y } = getCurrentMonth();
-  const thisMois = gristData.actions.filter(a => {
-    const d = new Date(a.date_suivi_action * 1000);
-    return d.getMonth() === m && d.getFullYear() === y;
+  // Agréger depuis indicValeurs (BDD_SAISIE_suivi_participations)
+  DB.indicValeurs.forEach(row => {
+    const configRow = DB.indicConfig.find(c=>c.id===row.Indicateurs);
+    if (configRow && totals.hasOwnProperty(configRow.Code_indicateur)) {
+      const val = typeof row.valeur_indicateur === 'number' ? row.valeur_indicateur : 0;
+      totals[configRow.Code_indicateur] += val;
+    }
   });
-  document.getElementById('kpiMois').textContent = thisMois.length;
 
-  const bea = gristData.actions.filter(a => String(a.projet_ref) === '1').length;
-  const fibi = gristData.actions.filter(a => String(a.projet_ref) === '2').length;
-  document.getElementById('kpiBea').textContent = bea;
-  document.getElementById('kpiFibi').textContent = fibi;
-}
+  // Cas spécial : nb_etablissements_participants → on compte les lignes uniques
+  if (totals.hasOwnProperty('nb_etablissements_participants')) {
+    const uniq = new Set(DB.etabs.filter(e=>e.ETABLISSEMENT_PARTICIPANT>0).map(e=>e.ETABLISSEMENT_PARTICIPANT));
+    totals['nb_etablissements_participants'] = uniq.size;
+  }
 
-function renderRecent() {
-  const sorted = [...gristData.actions].sort((a, b) => b.date_suivi_action - a.date_suivi_action).slice(0, 7);
-  const cont = document.getElementById('recentList');
-  if (!sorted.length) { cont.innerHTML = '<div style="padding:20px;text-align:center;color:#bbb;font-size:13px;">Aucune action saisie</div>'; return; }
-  cont.innerHTML = sorted.map((a, i) => {
-    const col = AVATAR_COLORS[i % AVATAR_COLORS.length];
-    const resp = a.responsable_suivi_action_ref ? (gristData.membres.find(m => m.id === a.responsable_suivi_action_ref) || {}) : {};
-    const initials = avatarInitials(resp.Membre || a.Cree_par || '?');
-    const proj = String(a.projet_ref) === '1' ? 'BEA' : 'FIBI';
-    const badgeClass = proj === 'BEA' ? 'badge-bea' : 'badge-fibi';
-    const wp = a.gristHelper_Display5 || '';
-    const wpShort = wp.split(' - ')[0] || wp;
-    return `<div class="action-row">
-      <div class="action-avatar ${col}">${initials}</div>
-      <div class="action-info">
-        <div class="action-name">${a.nom_suivi_action || '(sans nom)'} <span class="badge ${badgeClass}">${proj}</span></div>
-        <div class="action-meta">${wpShort}</div>
-      </div>
-      <div class="action-date">${formatDate(a.date_suivi_action)}</div>
+  grid.innerHTML = selectedIndics.map((code,i) => {
+    const label = map[code] || code;
+    const val = totals[code] || 0;
+    return `<div class="kpi-card">
+      <div class="kpi-label">${label}</div>
+      <div class="kpi-val">${val.toLocaleString('fr-FR')}</div>
+      <div class="kpi-sub">total cumulé</div>
     </div>`;
   }).join('');
 }
 
 function renderResps() {
   const counts = {};
-  gristData.actions.forEach(a => {
-    const m = gristData.membres.find(mb => mb.id === a.responsable_suivi_action_ref);
-    const name = m ? m.Membre : (a.Cree_par || 'Inconnu');
-    counts[name] = (counts[name] || 0) + 1;
+  DB.actions.forEach(a => {
+    const m = DB.membres.find(mb=>mb.id===a.responsable_suivi_action_ref);
+    const name = m ? m.Membre : (a.Cree_par||'Inconnu');
+    counts[name] = (counts[name]||0)+1;
   });
-  const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
-  const max = sorted[0]?.[1] || 1;
+  const sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+  const max = sorted[0]?.[1]||1;
   const cont = document.getElementById('respList');
-  if (!sorted.length) { cont.innerHTML = '<div style="padding:20px;text-align:center;color:#bbb;font-size:13px;">Aucune donnée</div>'; return; }
-  cont.innerHTML = sorted.map(([name, count], i) => {
-    const pct = Math.round((count / max) * 100);
-    const color = BAR_COLORS[i % BAR_COLORS.length];
-    return `<div class="resp-row">
-      <div class="resp-top">
-        <span class="resp-name">${name}</span>
-        <span class="resp-count">${count} action${count > 1 ? 's' : ''}</span>
+  if (!sorted.length){cont.innerHTML='<div style="padding:18px;text-align:center;color:#bbb;font-size:13px">Aucune donnée</div>';return;}
+  cont.innerHTML = sorted.map(([name,count],i)=>`
+    <div class="resp-row">
+      <div class="resp-top"><span class="resp-name">${name}</span><span class="resp-count">${count} action${count>1?'s':''}</span></div>
+      <div class="bar-bg"><div class="bar-fill" style="width:${Math.round(count/max*100)}%;background:${BARCOLS[i%BARCOLS.length]}"></div></div>
+    </div>`).join('');
+}
+
+function renderProjets() {
+  const bea = DB.actions.filter(a=>String(a.projet_ref)==='1').length;
+  const fibi = DB.actions.filter(a=>String(a.projet_ref)==='2').length;
+  const total = bea+fibi||1;
+  const cont = document.getElementById('projetList');
+  cont.innerHTML = `
+    <div class="resp-row">
+      <div class="resp-top"><span class="resp-name">PIA3 – BEA</span><span class="resp-count">${bea} action${bea>1?'s':''}</span></div>
+      <div class="bar-bg"><div class="bar-fill" style="width:${Math.round(bea/total*100)}%;background:var(--purple-600)"></div></div>
+    </div>
+    <div class="resp-row">
+      <div class="resp-top"><span class="resp-name">PIA4 – FIBI</span><span class="resp-count">${fibi} action${fibi>1?'s':''}</span></div>
+      <div class="bar-bg"><div class="bar-fill" style="width:${Math.round(fibi/total*100)}%;background:var(--teal-600)"></div></div>
+    </div>`;
+}
+
+function renderRecent() {
+  const sorted = [...DB.actions].sort((a,b)=>b.date_suivi_action-a.date_suivi_action).slice(0,10);
+  const cont = document.getElementById('recentList');
+  if (!sorted.length){cont.innerHTML='<div style="padding:18px;text-align:center;color:#bbb;font-size:13px">Aucune action</div>';return;}
+  cont.innerHTML = sorted.map((a,i)=>{
+    const m = DB.membres.find(mb=>mb.id===a.responsable_suivi_action_ref)||{};
+    const ini = initials(m.Membre||a.Cree_par||'?');
+    const proj = String(a.projet_ref)==='1'?'BEA':'FIBI';
+    const wp = (a.gristHelper_Display5||'').split(' - ')[0]||'';
+    return `<div class="action-row">
+      <div class="av ${AVCOLS[i%5]}">${ini}</div>
+      <div class="action-info">
+        <div class="action-name">${a.nom_suivi_action||'(sans nom)'}<span class="badge ${proj==='BEA'?'b-bea':'b-fibi'}">${proj}</span></div>
+        <div class="action-meta">${wp}</div>
       </div>
-      <div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${color}"></div></div>
+      <div class="action-date">${fmtDate(a.date_suivi_action)}</div>
     </div>`;
   }).join('');
 }
 
-function populateFormSelects() {
-  const rSelect = document.getElementById('fResp');
-  gristData.membres.forEach(m => {
-    const o = document.createElement('option');
-    o.value = m.id; o.textContent = m.Membre;
-    rSelect.appendChild(o);
-  });
+function updateHeader() {
+  const n = new Date();
+  const mois = n.toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
+  document.getElementById('headerSub').textContent = `${DB.actions.length} actions — ${mois}`;
+}
 
-  const pSelect = document.getElementById('fProjet');
-  gristData.projets.forEach(p => {
-    const o = document.createElement('option');
-    o.value = p.id; o.textContent = p.lib_projet;
-    pSelect.appendChild(o);
-  });
+/* ── FORMULAIRE CASCADE ── */
+function populateSelects() {
+  const rs = document.getElementById('fResp');
+  DB.membres.forEach(m=>{ const o=document.createElement('option'); o.value=m.id; o.textContent=m.Membre; rs.appendChild(o); });
+  const ps = document.getElementById('fProjet');
+  DB.projets.forEach(p=>{ const o=document.createElement('option'); o.value=p.id; o.textContent=p.lib_projet; ps.appendChild(o); });
 }
 
 function onProjetChange() {
   const pid = document.getElementById('fProjet').value;
-  const wpSel = document.getElementById('fWp');
-  const aSel = document.getElementById('fAction');
-  wpSel.innerHTML = '<option value="">— Choisir un WP/Axe —</option>';
-  aSel.innerHTML = '<option value="">— Choisir d\'abord un WP/Axe —</option>';
-  wpSel.disabled = !pid;
-  aSel.disabled = true;
-  if (pid) {
-    gristData.wps.filter(w => String(w.projet_ref) === String(pid)).forEach(w => {
-      const o = document.createElement('option');
-      o.value = w.id; o.textContent = w.id_wp_axe_calc;
-      wpSel.appendChild(o);
-    });
-  }
+  const ws = document.getElementById('fWp'), as = document.getElementById('fAction'), ss = document.getElementById('fSousAction');
+  ws.innerHTML='<option value="">— Choisir un WP/Axe —</option>'; ws.disabled=!pid;
+  as.innerHTML='<option value="">— Choisir d\'abord un WP/Axe —</option>'; as.disabled=true;
+  ss.innerHTML='<option value="">— Choisir d\'abord une action —</option>'; ss.disabled=true;
+  if (pid) DB.wps.filter(w=>String(w.projet_ref)===String(pid)).forEach(w=>{
+    const o=document.createElement('option'); o.value=w.id; o.textContent=w.id_wp_axe_calc; ws.appendChild(o);
+  });
+  clearIndicateurs(); updateSteps();
+}
+function onWpChange() {
+  const wid = document.getElementById('fWp').value;
+  const as = document.getElementById('fAction'), ss = document.getElementById('fSousAction');
+  as.innerHTML='<option value="">— Choisir une action —</option>'; as.disabled=!wid;
+  ss.innerHTML='<option value="">— Choisir d\'abord une action —</option>'; ss.disabled=true;
+  if (wid) DB.actionsP.filter(a=>String(a.wp_axe_ref)===String(wid)).forEach(a=>{
+    const o=document.createElement('option'); o.value=a.id; o.textContent=a.id_action_calc; as.appendChild(o);
+  });
+  clearIndicateurs(); updateSteps();
+}
+function onActionChange() {
+  const aid = document.getElementById('fAction').value;
+  const ss = document.getElementById('fSousAction');
+  ss.innerHTML='<option value="">— Choisir une sous-action —</option>'; ss.disabled=!aid;
+  if (aid) DB.sousActions.filter(s=>String(s.action_ref)===String(aid)).forEach(s=>{
+    const o=document.createElement('option'); o.value=s.id; o.textContent=s.id_sous_action_calc||s.lib_sous_action; ss.appendChild(o);
+  });
+  clearIndicateurs(); updateSteps();
+}
+function onSousActionChange() {
+  const sid = document.getElementById('fSousAction').value;
+  renderIndicateurs(sid ? parseInt(sid) : null);
   updateSteps();
 }
 
-function onWpChange() {
-  const wid = document.getElementById('fWp').value;
-  const aSel = document.getElementById('fAction');
-  aSel.innerHTML = '<option value="">— Choisir une action —</option>';
-  aSel.disabled = !wid;
-  if (wid) {
-    gristData.actionsProjet.filter(a => String(a.wp_axe_ref) === String(wid)).forEach(a => {
-      const o = document.createElement('option');
-      o.value = a.id; o.textContent = a.id_action_calc;
-      aSel.appendChild(o);
-    });
-  }
-  updateSteps();
+function clearIndicateurs() {
+  document.getElementById('indicContainer').innerHTML='';
+  document.getElementById('indicSection').style.display='none';
+}
+
+function renderIndicateurs(sousActionId) {
+  const cont = document.getElementById('indicContainer');
+  const sec = document.getElementById('indicSection');
+  if (!sousActionId) { cont.innerHTML=''; sec.style.display='none'; return; }
+  const indics = DB.indicConfig.filter(c=>c.type_sous_action===sousActionId);
+  if (!indics.length) { cont.innerHTML='<div class="indic-empty">Aucun indicateur configuré pour cette sous-action</div>'; sec.style.display='block'; return; }
+  sec.style.display='block';
+  cont.innerHTML = `<div class="indic-block">
+    <div class="indic-title">Renseigner les indicateurs pour cette sous-action</div>
+    ${indics.map(ind=>`
+      <div class="indic-field">
+        <label>${ind.obligatoire?'<span class="req-dot">•</span>':''}${ind.libelle_indicateurs}</label>
+        ${ind.type_valeur==='booleen'
+          ? `<select id="indic_${ind.id}" style="width:110px"><option value="">—</option><option value="1">Oui</option><option value="0">Non</option></select>`
+          : `<input type="number" id="indic_${ind.id}" min="0" placeholder="0">`
+        }
+      </div>`).join('')}
+  </div>`;
 }
 
 function updateSteps() {
-  const hasProjet = !!document.getElementById('fProjet').value;
-  const hasWp = !!document.getElementById('fWp').value;
-  const hasAction = !!document.getElementById('fAction').value;
-  const steps = ['step1','step2','step3','step4'];
-  const filled = [true, hasProjet, hasWp, hasAction];
-  steps.forEach((id, i) => {
-    const el = document.getElementById(id);
-    el.className = 'step ' + (filled[i+1] ? 'done' : (filled[i] ? 'active' : ''));
+  const vals = [
+    !!document.getElementById('fProjet').value,
+    !!document.getElementById('fWp').value,
+    !!document.getElementById('fAction').value,
+    !!document.getElementById('fSousAction').value
+  ];
+  [0,1,2,3].forEach(i=>{
+    const el=document.getElementById('st'+i);
+    el.className='step '+(vals[i]?'s-done':vals.slice(0,i).every(v=>v)?'s-active':'');
   });
-  document.getElementById('step1').className = 'step ' + (hasProjet ? 'done' : 'active');
+  document.getElementById('st0').className='step '+(vals[0]?'s-done':'s-active');
 }
 
-function openModal() {
-  document.getElementById('modalOverlay').classList.add('open');
-  document.getElementById('successBanner').classList.remove('show');
-  updateSteps();
-}
-
-function closeModal() {
-  document.getElementById('modalOverlay').classList.remove('open');
-}
+function openModal() { document.getElementById('overlay').classList.add('open'); document.getElementById('toast').classList.remove('show'); updateSteps(); }
+function closeModal() { document.getElementById('overlay').classList.remove('open'); }
 
 async function submitAction() {
   const nom = document.getElementById('fNom').value.trim();
   const date = document.getElementById('fDate').value;
   const resp = document.getElementById('fResp').value;
   const projet = document.getElementById('fProjet').value;
-
-  if (!nom || !date || !resp || !projet) {
-    alert('Merci de remplir les champs obligatoires (nom, date, responsable, projet).');
-    return;
-  }
+  if (!nom||!date||!resp||!projet) { alert('Merci de remplir les champs obligatoires (nom, date, responsable, projet).'); return; }
 
   const btn = document.getElementById('btnSubmit');
-  btn.disabled = true; btn.textContent = 'Enregistrement…';
-
+  btn.disabled=true; btn.textContent='Enregistrement…';
   try {
+    const sousActionId = parseInt(document.getElementById('fSousAction').value)||0;
     const record = {
       nom_suivi_action: nom,
-      date_suivi_action: Math.floor(new Date(date).getTime() / 1000),
-      responsable_suivi_action_ref: parseInt(resp) || 0,
-      projet_ref: parseInt(projet) || 0,
-      wp_axe_ref: parseInt(document.getElementById('fWp').value) || 0,
-      action_ref: parseInt(document.getElementById('fAction').value) || 0,
+      date_suivi_action: Math.floor(new Date(date).getTime()/1000),
+      responsable_suivi_action_ref: parseInt(resp)||0,
+      projet_ref: parseInt(projet)||0,
+      wp_axe_ref: parseInt(document.getElementById('fWp').value)||0,
+      action_ref: parseInt(document.getElementById('fAction').value)||0,
+      sous_action_ref: sousActionId,
       Commentaires: document.getElementById('fComment').value,
       Cree_par: 'widget_accueil'
     };
+    const [actionResult] = await grist.docApi.applyUserActions([['AddRecord','SAISIE_actions_realisees',null,record]]);
+    const newActionId = actionResult;
 
-    await grist.docApi.applyUserActions([
-      ['AddRecord', 'SAISIE_actions_realisees', null, record]
-    ]);
+    // Enregistrer les indicateurs
+    const indics = DB.indicConfig.filter(c=>c.type_sous_action===sousActionId);
+    for (const ind of indics) {
+      const el = document.getElementById('indic_'+ind.id);
+      if (!el) continue;
+      const val = el.value;
+      if (val===''||val===null) continue;
+      await grist.docApi.applyUserActions([['AddRecord','BDD_SAISIE_suivi_participations',null,{
+        Action_ref: newActionId,
+        Sous_Action_ref_calc: sousActionId,
+        Indicateurs: ind.id,
+        valeur_indicateur: parseFloat(val)||0,
+        Cree_par: 'widget_accueil'
+      }]]);
+    }
 
-    document.getElementById('successBanner').classList.add('show');
-    document.getElementById('fNom').value = '';
-    document.getElementById('fComment').value = '';
-    document.getElementById('fProjet').value = '';
-    onProjetChange();
-    initToday();
-
-    setTimeout(() => {
-      closeModal();
-      document.getElementById('successBanner').classList.remove('show');
-    }, 1800);
-
-  } catch(e) {
-    console.error(e);
-    alert('Erreur lors de l\'enregistrement. Vérifiez les permissions Grist.');
-  }
-
-  btn.disabled = false; btn.textContent = 'Enregistrer';
+    document.getElementById('toast').classList.add('show');
+    document.getElementById('fNom').value='';
+    document.getElementById('fComment').value='';
+    document.getElementById('fProjet').value='';
+    onProjetChange(); initToday();
+    await loadAll();
+    setTimeout(()=>{ closeModal(); document.getElementById('toast').classList.remove('show'); },1800);
+  } catch(e) { console.error(e); alert('Erreur lors de l\'enregistrement.'); }
+  btn.disabled=false; btn.textContent='Enregistrer';
 }
 
-grist.ready({ requiredAccess: 'full' });
-
-grist.onRecords(function(records, mappings) {});
-
+/* ── LOAD ── */
 async function loadAll() {
   try {
-    const [actions, projets, wps, actionsProjet, membres] = await Promise.all([
+    const [a,p,w,ap,sa,m,ic,iv,et] = await Promise.all([
       grist.docApi.fetchTable('SAISIE_actions_realisees'),
       grist.docApi.fetchTable('PROJET_projet'),
       grist.docApi.fetchTable('PROJET_axes'),
       grist.docApi.fetchTable('PROJET_Actions'),
+      grist.docApi.fetchTable('PROJET_sous_actions'),
       grist.docApi.fetchTable('CMQ_RH'),
+      grist.docApi.fetchTable('CONFIG_liste_des_indicateurs_par_action'),
+      grist.docApi.fetchTable('BDD_SAISIE_suivi_participations'),
+      grist.docApi.fetchTable('SAISIE_etablissements_participants_par_action'),
     ]);
+    DB.actions=tableToRows(a); DB.projets=tableToRows(p); DB.wps=tableToRows(w);
+    DB.actionsP=tableToRows(ap); DB.sousActions=tableToRows(sa); DB.membres=tableToRows(m);
+    DB.indicConfig=tableToRows(ic); DB.indicValeurs=tableToRows(iv); DB.etabs=tableToRows(et);
+    render();
+  } catch(e) { console.warn('Mode démo:', e.message); loadDemo(); }
+}
 
-    function tableToRows(t) {
-      const keys = Object.keys(t);
-      const len = t[keys[0]]?.length || 0;
-      return Array.from({length: len}, (_, i) => {
-        const row = {};
-        keys.forEach(k => row[k] = t[k][i]);
-        return row;
-      });
-    }
+function render() {
+  renderChips(); renderResps(); renderProjets(); renderRecent(); populateSelects(); updateHeader();
+}
 
-    gristData.actions = tableToRows(actions);
-    gristData.projets = tableToRows(projets);
-    gristData.wps = tableToRows(wps);
-    gristData.actionsProjet = tableToRows(actionsProjet);
-    gristData.membres = tableToRows(membres);
-
-    renderKPIs();
-    renderRecent();
-    renderResps();
-    populateFormSelects();
-
-  } catch(e) {
-    console.warn('Mode démo (hors Grist) :', e.message);
-    loadDemoData();
+function loadDemo() {
+  DB.projets=[{id:1,lib_projet:'PIA3 - BEA'},{id:2,lib_projet:'PIA4 - FIBI'}];
+  DB.wps=[
+    {id:1,id_wp_axe_calc:'AXE4 - Ouverture sociétale',projet_ref:1},
+    {id:6,id_wp_axe_calc:'WP1 - Excellence professionnelle',projet_ref:2},
+    {id:7,id_wp_axe_calc:'WP2 - Excellence académique',projet_ref:2},
+    {id:10,id_wp_axe_calc:'WP5 - Pilotage',projet_ref:2},
+  ];
+  DB.actionsP=[
+    {id:1,id_action_calc:'WP1.01 - Adaptation des formations',wp_axe_ref:6},
+    {id:8,id_action_calc:'WP5.01 - Pilotage',wp_axe_ref:10},
+  ];
+  DB.sousActions=[
+    {id:1,lib_sous_action:'WP1.01.a - Coloration des formations',id_sous_action_calc:'WP1.01.a',action_ref:1},
+    {id:15,lib_sous_action:'WP5.01.a - Pilotage FIBI',id_sous_action_calc:'WP5.01.a',action_ref:8},
+  ];
+  DB.membres=[
+    {id:1,Membre:'Nathalie G.'},{id:2,Membre:'Claire P.'},{id:3,Membre:'Adem K.'},
+    {id:5,Membre:'Clarisse M.'},{id:9,Membre:'Frédérick F.'},{id:10,Membre:'Camille G.'}
+  ];
+  DB.indicConfig=[
+    {id:1,Code_indicateur:'nb_colorations',libelle_indicateurs:"Nombre de colorations",type_sous_action:1,type_valeur:'nombre',obligatoire:1},
+    {id:2,Code_indicateur:'nb_formations_colorees',libelle_indicateurs:"Nombre de formations colorées",type_sous_action:1,type_valeur:'nombre',obligatoire:1},
+    {id:3,Code_indicateur:'nb_apprenants_touches',libelle_indicateurs:"Nombre d'apprenants touchés",type_sous_action:1,type_valeur:'nombre',obligatoire:1},
+    {id:4,Code_indicateur:'nb_apprenants_diplomes',libelle_indicateurs:"Nombre d'apprenants diplomés",type_sous_action:1,type_valeur:'nombre',obligatoire:1},
+    {id:15,Code_indicateur:'nb_participants',libelle_indicateurs:"Nombre de participants",type_sous_action:15,type_valeur:'nombre',obligatoire:1},
+    {id:20,Code_indicateur:'nb_etablissements_participants',libelle_indicateurs:"Nombre d'établissements participants",type_sous_action:9,type_valeur:'nombre',obligatoire:1},
+    {id:26,Code_indicateur:'nb_participants',libelle_indicateurs:"Nombre de participants",type_sous_action:12,type_valeur:'nombre',obligatoire:0},
+  ];
+  DB.indicValeurs=[
+    {id:10,Action_ref:8,Sous_Action_ref_calc:1,Indicateurs:4,valeur_indicateur:4},
+    {id:11,Action_ref:8,Sous_Action_ref_calc:1,Indicateurs:2,valeur_indicateur:2},
+  ];
+  DB.etabs=[
+    {id:1,ETABLISSEMENT_PARTICIPANT:7778},{id:2,ETABLISSEMENT_PARTICIPANT:7776},
+    {id:3,ETABLISSEMENT_PARTICIPANT:7203},{id:4,ETABLISSEMENT_PARTICIPANT:11156},
+    {id:5,ETABLISSEMENT_PARTICIPANT:6862},{id:6,ETABLISSEMENT_PARTICIPANT:11156},
+  ];
+  DB.actions=[
+    {id:2,nom_suivi_action:'Olympiades',date_suivi_action:1764892800,responsable_suivi_action_ref:3,projet_ref:1,Cree_par:'adem',gristHelper_Display5:'AXE4 - Ouverture sociétale'},
+    {id:3,nom_suivi_action:'JDD',date_suivi_action:1773878400,responsable_suivi_action_ref:5,projet_ref:1,Cree_par:'clarisse',gristHelper_Display5:'AXE4 - Ouverture sociétale'},
+    {id:4,nom_suivi_action:'Art et Bioeco',date_suivi_action:1774396800,responsable_suivi_action_ref:10,projet_ref:1,Cree_par:'camille.g',gristHelper_Display5:'AXE4 - Ouverture sociétale'},
+    {id:5,nom_suivi_action:'COPIL',date_suivi_action:1773014400,responsable_suivi_action_ref:2,projet_ref:2,Cree_par:'claire',gristHelper_Display5:'WP5 - Pilotage'},
+    {id:6,nom_suivi_action:'Forum des métiers du vivant',date_suivi_action:1772668800,responsable_suivi_action_ref:9,projet_ref:2,Cree_par:'frederick',gristHelper_Display5:'WP4 - Attractivité'},
+    {id:7,nom_suivi_action:'Olympiades inter-collèges',date_suivi_action:1769644800,responsable_suivi_action_ref:3,projet_ref:2,Cree_par:'adem',gristHelper_Display5:'WP2 - Excellence académique'},
+    {id:8,nom_suivi_action:'Colorations',date_suivi_action:1775001600,responsable_suivi_action_ref:3,projet_ref:2,Cree_par:'adem',gristHelper_Display5:'WP1 - Excellence professionnelle'},
+  ];
+  // Pré-sélectionner quelques indics pour la démo
+  if (!selectedIndics.length) {
+    selectedIndics = ['nb_apprenants_touches','nb_formations_colorees','nb_etablissements_participants'];
+    saveIndics();
   }
+  render();
 }
 
-function loadDemoData() {
-  gristData = {
-    projets: [
-      {id:1, lib_projet:'PIA3 - BEA', cod_projet:'BEA'},
-      {id:2, lib_projet:'PIA4 - FIBI', cod_projet:'FIBI'}
-    ],
-    wps: [
-      {id:1,cod_wp_axe:'AXE1',id_wp_axe_calc:'AXE1 - Bâtiment Totem',projet_ref:1},
-      {id:4,cod_wp_axe:'AXE4',id_wp_axe_calc:'AXE4 - Ouverture sociétale',projet_ref:1},
-      {id:6,cod_wp_axe:'WP1',id_wp_axe_calc:'WP1 - Excellence professionnelle',projet_ref:2},
-      {id:7,cod_wp_axe:'WP2',id_wp_axe_calc:'WP2 - Excellence académique',projet_ref:2},
-      {id:10,cod_wp_axe:'WP5',id_wp_axe_calc:'WP5 - Pilotage',projet_ref:2},
-    ],
-    actionsProjet: [
-      {id:1,id_action_calc:'WP1.01 - Adaptation des formations',wp_axe_ref:6},
-      {id:2,id_action_calc:'WP2.01 - Création de formations',wp_axe_ref:7},
-      {id:8,id_action_calc:'WP5.01 - Pilotage',wp_axe_ref:10},
-    ],
-    membres: [
-      {id:1,Membre:'Nathalie G.'},{id:2,Membre:'Claire P.'},{id:3,Membre:'Adem K.'},
-      {id:5,Membre:'Clarisse M.'},{id:9,Membre:'Frédérick F.'},{id:10,Membre:'Camille G.'}
-    ],
-    actions: [
-      {id:2,nom_suivi_action:'Olympiades',date_suivi_action:1764892800,responsable_suivi_action_ref:3,projet_ref:1,Cree_par:'adem',gristHelper_Display5:'AXE4 - Ouverture sociétale'},
-      {id:3,nom_suivi_action:'JDD',date_suivi_action:1773878400,responsable_suivi_action_ref:5,projet_ref:1,Cree_par:'clarisse',gristHelper_Display5:'AXE4 - Ouverture sociétale'},
-      {id:4,nom_suivi_action:'Art et Bioeco',date_suivi_action:1774396800,responsable_suivi_action_ref:10,projet_ref:1,Cree_par:'camille',gristHelper_Display5:'AXE4 - Ouverture sociétale'},
-      {id:5,nom_suivi_action:'COPIL',date_suivi_action:1773014400,responsable_suivi_action_ref:2,projet_ref:2,Cree_par:'claire',gristHelper_Display5:'WP5 - Pilotage'},
-      {id:6,nom_suivi_action:'Forum des métiers du vivant',date_suivi_action:1772668800,responsable_suivi_action_ref:9,projet_ref:2,Cree_par:'frederick',gristHelper_Display5:'WP4 - Attractivité'},
-      {id:7,nom_suivi_action:'Olympiades inter-collèges',date_suivi_action:1769644800,responsable_suivi_action_ref:3,projet_ref:2,Cree_par:'adem',gristHelper_Display5:'WP2 - Excellence académique'},
-      {id:8,nom_suivi_action:'Colorations',date_suivi_action:1775001600,responsable_suivi_action_ref:3,projet_ref:2,Cree_par:'adem',gristHelper_Display5:'WP1 - Excellence professionnelle'},
-    ]
-  };
-  renderKPIs(); renderRecent(); renderResps(); populateFormSelects();
-}
-
+grist.ready({requiredAccess:'full'});
 initToday();
 loadAll();
 </script>
