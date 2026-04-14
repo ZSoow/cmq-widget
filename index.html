@@ -564,6 +564,7 @@ async function submitAction() {
             valeur:         isNaN(valSaisie) ? 0 : valSaisie,
             valeur_bool:    valBool,
             Cree_par:       'widget_accueil',
+            date_creation:  dateTs,
           }]]);
         } catch(indErr) {
           console.warn('Erreur indicateur', ind.Code_indicateur, indErr.message);
