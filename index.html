@@ -346,11 +346,12 @@ function renderKPIs() {
   const totals = {};
   selectedIndics.forEach(code => { totals[code] = 0; });
 
-  // Agréger depuis indicValeurs (SUIVI_indicateurs)
+  // Agréger depuis SUIVI_indicateurs
+  // indicateur_ref = id de la config, valeur = valeur numérique saisie
   DB.indicValeurs.forEach(row => {
-    const configRow = DB.indicConfig.find(c=>c.id===row.Indicateurs);
+    const configRow = DB.indicConfig.find(c => c.id === row.indicateur_ref);
     if (configRow && totals.hasOwnProperty(configRow.Code_indicateur)) {
-      const val = typeof row.valeur_indicateur === 'number' ? row.valeur_indicateur : 0;
+      const val = typeof row.valeur === 'number' ? row.valeur : 0;
       totals[configRow.Code_indicateur] += val;
     }
   });
