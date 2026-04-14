@@ -546,25 +546,28 @@ async function submitAction() {
     const dateTs = Math.floor(new Date(date).getTime()/1000);
 
     // ── CRÉATION AUTOMATIQUE DES LIGNES D'INDICATEURS ──
-    // Pour chaque indicateur lié à la sous-action, on crée une ligne dans
-    // SUIVI_indicateurs avec la valeur saisie (ou 0 par défaut).
-    // L'utilisateur peut ensuite compléter/corriger directement dans Grist.
+    // On envoie une ligne par indicateur dans SUIVI_indicateurs.
+    // On simplifie au maximum ce qu'on envoie à Grist pour éviter
+    // les erreurs de type (Toggle, Date, Reference).
     const indics = DB.indicConfig.filter(c => c.type_sous_action === sousActionId);
-    const indicRows = indics.map(ind => {
-      const el = document.getElementById('indic_' + ind.id);
-      const valSaisie = el ? parseFloat(el.value) : NaN;
-      const valBool = (el && ind.type_valeur === 'booleen') ? (el.value === '1' ? 1 : 0) : 0;
-      return ['AddRecord', 'SUIVI_indicateurs', null, {
-        action_ref:     newActionId || 0,
-        indicateur_ref: ind.id,
-        valeur:         isNaN(valSaisie) ? 0 : valSaisie,
-        valeur_bool:    valBool,
-        Cree_par:       'widget_accueil',
-        date_creation:  dateTs,
-      }];
-    });
-    if (indicRows.length) {
-      await grist.docApi.applyUserActions(indicRows);
+    if (indics.length && newActionId) {
+      // On envoie les lignes une par une pour isoler les erreurs
+      for (const ind of indics) {
+        const el = document.getElementById('indic_' + ind.id);
+        const valSaisie = el ? parseFloat(el.value) : NaN;
+        const valBool = (el && ind.type_valeur === 'booleen') ? (el.value === '1' ? true : false) : false;
+        try {
+          await grist.docApi.applyUserActions([['AddRecord', 'SUIVI_indicateurs', null, {
+            action_ref:     newActionId,
+            indicateur_ref: ind.id,
+            valeur:         isNaN(valSaisie) ? 0 : valSaisie,
+            valeur_bool:    valBool,
+            Cree_par:       'widget_accueil',
+          }]]);
+        } catch(indErr) {
+          console.warn('Erreur indicateur', ind.Code_indicateur, indErr.message);
+        }
+      }
     }
 
     document.getElementById('toast').classList.add('show');
