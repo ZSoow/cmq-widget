@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CMQ – Accueil</title>
 <script src="https://docs.getgrist.com/grist-plugin-api.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -129,6 +130,85 @@ input[type=number]{-moz-appearance:textfield}
 .toast.show{display:block}
 
 @media(max-width:700px){.two-col{grid-template-columns:1fr}.form-row{grid-template-columns:1fr}.kpi-card{min-width:140px}}
+
+/* ── RAPPORT ── */
+.rapport-filters{display:flex;flex-wrap:wrap;align-items:flex-end;gap:14px;background:#fff;border:.5px solid #e0e0e0;border-radius:var(--r);padding:14px 18px;margin-bottom:20px}
+.rf-group{display:flex;flex-direction:column;gap:5px}
+.rf-group input[type=date]{width:130px}
+.rf-group select{min-width:130px}
+.rf-group:nth-child(2){flex-direction:row;align-items:flex-end;gap:6px}
+.rf-group:nth-child(2) label{display:none}
+.rf-label{font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.04em}
+.rf-actions{display:flex;gap:8px;margin-left:auto;align-items:flex-end}
+.btn-export{padding:8px 16px;border-radius:var(--rsm);font-size:13px;font-weight:500;cursor:pointer;border:none;background:var(--purple-600);color:#fff;transition:background .15s}
+.btn-export:hover{background:var(--purple-800)}
+.btn-excel{background:var(--teal-600)}
+.btn-excel:hover{background:var(--teal-800)}
+
+/* Rapport imprimable */
+.rapport-doc{background:#fff;border-radius:var(--r);border:.5px solid #e0e0e0;overflow:hidden}
+
+/* Couverture */
+.rap-cover{background:var(--purple-600);padding:36px 40px;color:#fff}
+.rap-cover-badge{display:inline-block;background:rgba(255,255,255,.15);border-radius:20px;padding:4px 14px;font-size:11px;font-weight:600;letter-spacing:.06em;margin-bottom:12px}
+.rap-cover h1{font-size:24px;font-weight:600;margin-bottom:6px}
+.rap-cover p{font-size:13px;opacity:.8}
+.rap-cover-meta{display:flex;gap:24px;margin-top:20px;padding-top:20px;border-top:1px solid rgba(255,255,255,.2)}
+.rap-cover-meta div{font-size:12px;opacity:.75}
+.rap-cover-meta strong{display:block;font-size:18px;font-weight:600;opacity:1;margin-bottom:2px}
+
+/* KPIs résumé */
+.rap-kpis{display:flex;flex-wrap:wrap;gap:0;border-bottom:.5px solid #f0f0f0}
+.rap-kpi{flex:1;min-width:120px;padding:16px 20px;border-right:.5px solid #f0f0f0}
+.rap-kpi:last-child{border-right:none}
+.rap-kpi-val{font-size:26px;font-weight:600;color:var(--purple-600);line-height:1}
+.rap-kpi-label{font-size:11px;color:#999;margin-top:4px}
+
+/* Sections projet */
+.rap-section{padding:0}
+.rap-proj-header{display:flex;align-items:center;gap:12px;padding:14px 24px;border-bottom:.5px solid #f0f0f0}
+.rap-proj-badge{padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600}
+.rap-proj-title{font-size:14px;font-weight:600;color:#222}
+.rap-proj-count{font-size:12px;color:#999;margin-left:auto}
+
+/* WP bloc */
+.rap-wp{border-bottom:.5px solid #f5f5f5}
+.rap-wp-header{display:flex;align-items:center;gap:10px;padding:10px 24px;background:#fafafa;cursor:pointer}
+.rap-wp-title{font-size:12px;font-weight:600;color:#555}
+.rap-wp-count{font-size:11px;color:#bbb;margin-left:auto}
+
+/* Action bloc */
+.rap-action{padding:12px 24px 12px 36px;border-bottom:.5px solid #f8f8f8}
+.rap-action:last-child{border-bottom:none}
+.rap-action-hd{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.rap-action-name{font-size:13px;font-weight:500;color:#222}
+.rap-action-date{font-size:11px;color:#bbb}
+.rap-action-resp{font-size:11px;color:#888;margin-left:auto}
+
+/* Indicateurs dans l'action */
+.rap-indics{display:flex;flex-wrap:wrap;gap:6px}
+.rap-indic{background:#f4f3f0;border-radius:6px;padding:5px 10px;font-size:11px;color:#555;display:flex;align-items:center;gap:6px}
+.rap-indic-val{font-weight:600;color:#222;font-size:13px}
+.rap-indic-zero{opacity:.45}
+
+/* Section récap indicateurs */
+.rap-recap-title{font-size:13px;font-weight:600;color:#444;padding:14px 24px;border-bottom:.5px solid #f0f0f0;background:#fafafa}
+.rap-recap-table{width:100%;border-collapse:collapse;font-size:12px}
+.rap-recap-table th{text-align:left;padding:8px 16px;background:#f4f3f0;color:#888;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.04em}
+.rap-recap-table td{padding:8px 16px;border-bottom:.5px solid #f5f5f5;color:#333}
+.rap-recap-table tr:last-child td{border-bottom:none}
+.rap-recap-table tr:hover td{background:#fafafa}
+.rap-recap-val{font-weight:600;color:var(--purple-600);text-align:right}
+
+/* Print */
+@media print{
+  .header,.tabs,.rapport-filters,.btn-export{display:none!important}
+  .tab-panel{display:block!important}
+  #tab-dashboard,#tab-recentes{display:none!important}
+  body{background:#fff}
+  .rapport-doc{border:none;box-shadow:none}
+  .rap-cover{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
 </style>
 </head>
 <body>
@@ -148,6 +228,7 @@ input[type=number]{-moz-appearance:textfield}
   <div class="tabs">
     <button class="tab active" onclick="switchTab('dashboard')">Tableau de bord</button>
     <button class="tab" onclick="switchTab('recentes')">Dernières actions</button>
+    <button class="tab" onclick="switchTab('rapport')">Rapport</button>
   </div>
 
   <!-- TAB DASHBOARD -->
@@ -180,6 +261,48 @@ input[type=number]{-moz-appearance:textfield}
     <div class="card">
       <div class="card-header"><span class="card-title">Dernières actions saisies</span></div>
       <div id="recentList"><div style="padding:18px;text-align:center;color:#bbb;font-size:13px">Chargement…</div></div>
+    </div>
+  </div>
+  <!-- TAB RAPPORT -->
+  <div class="tab-panel" id="tab-rapport">
+
+    <!-- Filtres -->
+    <div class="rapport-filters">
+      <div class="rf-group">
+        <label class="rf-label">Année</label>
+        <select id="rYear" onchange="genRapport()">
+          <option value="">Toutes</option>
+        </select>
+      </div>
+      <div class="rf-group">
+        <label class="rf-label">Période</label>
+        <input type="date" id="rFrom" onchange="genRapport()" placeholder="Du">
+        <span style="color:#bbb;font-size:13px">→</span>
+        <input type="date" id="rTo" onchange="genRapport()" placeholder="Au">
+      </div>
+      <div class="rf-group">
+        <label class="rf-label">Projet</label>
+        <select id="rProjet" onchange="genRapport()">
+          <option value="">Tous</option>
+          <option value="1">PIA3 – BEA</option>
+          <option value="2">PIA4 – FIBI</option>
+        </select>
+      </div>
+      <div class="rf-group">
+        <label class="rf-label">Responsable</label>
+        <select id="rResp" onchange="genRapport()">
+          <option value="">Tous</option>
+        </select>
+      </div>
+      <div class="rf-actions">
+        <button class="btn-export" onclick="exportPDF()">Exporter PDF</button>
+        <button class="btn-export btn-excel" onclick="exportExcel()">Exporter Excel</button>
+      </div>
+    </div>
+
+    <!-- Zone de rapport -->
+    <div id="rapportZone">
+      <div style="padding:40px;text-align:center;color:#bbb;font-size:13px">Configurez les filtres pour générer le rapport</div>
     </div>
   </div>
 </div>
@@ -277,9 +400,10 @@ function initials(name) {
 }
 
 function switchTab(t) {
-  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',['dashboard','recentes'][i]===t));
+  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',['dashboard','recentes','rapport'][i]===t));
   document.querySelectorAll('.tab-panel').forEach(el=>el.classList.remove('active'));
   document.getElementById('tab-'+t).classList.add('active');
+  if (t === 'rapport') genRapport();
 }
 
 /* ── INDICATEURS DASHBOARD ── */
@@ -605,7 +729,7 @@ async function loadAll() {
 }
 
 function render() {
-  renderChips(); renderResps(); renderProjets(); renderRecent(); populateSelects(); updateHeader();
+  renderChips(); renderResps(); renderProjets(); renderRecent(); populateSelects(); updateHeader(); initRapportFilters();
 }
 
 function loadDemo() {
@@ -661,6 +785,225 @@ function loadDemo() {
     saveIndics();
   }
   render();
+}
+
+
+/* ============================================================
+   RAPPORT
+   ============================================================ */
+function initRapportFilters() {
+  const ySel = document.getElementById('rYear');
+  if (!ySel) return;
+  // Vider sauf "Toutes"
+  while (ySel.options.length > 1) ySel.remove(1);
+  const years = new Set();
+  DB.actions.forEach(a => { if (a.date_suivi_action) years.add(new Date(a.date_suivi_action*1000).getFullYear()); });
+  [...years].sort((a,b)=>b-a).forEach(y => { const o=document.createElement('option'); o.value=y; o.textContent=y; ySel.appendChild(o); });
+  const rSel = document.getElementById('rResp');
+  while (rSel.options.length > 1) rSel.remove(1);
+  DB.membres.forEach(m => { const o=document.createElement('option'); o.value=m.id; o.textContent=m.Membre; rSel.appendChild(o); });
+}
+
+function getFilteredActions() {
+  const year=document.getElementById('rYear')?.value;
+  const from=document.getElementById('rFrom')?.value;
+  const to=document.getElementById('rTo')?.value;
+  const projet=document.getElementById('rProjet')?.value;
+  const resp=document.getElementById('rResp')?.value;
+  return DB.actions.filter(a => {
+    const d=new Date(a.date_suivi_action*1000);
+    if (year && d.getFullYear()!==parseInt(year)) return false;
+    if (from && d<new Date(from)) return false;
+    if (to && d>new Date(to)) return false;
+    if (projet && String(a.projet_ref)!==String(projet)) return false;
+    if (resp && String(a.responsable_suivi_action_ref)!==String(resp)) return false;
+    return true;
+  });
+}
+
+function getIndicateursForAction(actionId) {
+  return DB.indicValeurs.filter(iv => iv.action_ref === actionId);
+}
+
+function getIndicLabel(indicRef) {
+  const c = DB.indicConfig.find(c => c.id === indicRef);
+  return c ? c.libelle_indicateurs : '';
+}
+
+function genRapport() {
+  const actions = getFilteredActions();
+  const zone = document.getElementById('rapportZone');
+  if (!actions.length) {
+    zone.innerHTML = '<div style="padding:40px;text-align:center;color:#bbb;font-size:13px">Aucune action sur cette période</div>';
+    return;
+  }
+  const year=document.getElementById('rYear')?.value;
+  const from=document.getElementById('rFrom')?.value;
+  const to=document.getElementById('rTo')?.value;
+  const projetF=document.getElementById('rProjet')?.value;
+  let periodeLabel = year||'';
+  if (from||to) periodeLabel=(from||'…')+' → '+(to||'…');
+  if (!periodeLabel) periodeLabel='Toutes périodes';
+  const projetLabel = projetF==='1'?'PIA3 – BEA':projetF==='2'?'PIA4 – FIBI':'BEA + FIBI';
+
+  const totalActions=actions.length;
+  const totalIndics=actions.reduce((s,a)=>s+getIndicateursForAction(a.id).length,0);
+  const projetsActifs=new Set(actions.map(a=>a.projet_ref)).size;
+
+  // Récap indicateurs (utilisé aussi en bas)
+  const recapMap={};
+  actions.forEach(a => {
+    getIndicateursForAction(a.id).forEach(iv => {
+      const cfg=DB.indicConfig.find(c=>c.id===iv.indicateur_ref);
+      if (!cfg) return;
+      const key=cfg.Code_indicateur;
+      if (!recapMap[key]) recapMap[key]={label:cfg.libelle_indicateurs,total:0,nb:0};
+      recapMap[key].total+=(iv.valeur||0);
+      recapMap[key].nb++;
+    });
+  });
+
+  // Section 1 : Par projet → WP → Actions
+  const projets = projetF ? DB.projets.filter(p=>String(p.id)===String(projetF)) : DB.projets;
+  let section1='';
+  projets.forEach(proj => {
+    const actionsProj=actions.filter(a=>String(a.projet_ref)===String(proj.id));
+    if (!actionsProj.length) return;
+    const isBea=proj.id===1;
+    const badgeStyle=isBea?'background:var(--purple-50);color:var(--purple-800)':'background:var(--teal-50);color:var(--teal-800)';
+    const accentColor=isBea?'var(--purple-600)':'var(--teal-600)';
+    const wpMap={};
+    actionsProj.forEach(a=>{ if (!wpMap[a.wp_axe_ref]) wpMap[a.wp_axe_ref]=[]; wpMap[a.wp_axe_ref].push(a); });
+    let wpBlocs='';
+    Object.entries(wpMap).forEach(([wpId,wpActions])=>{
+      const wp=DB.wps.find(w=>w.id===parseInt(wpId));
+      const wpLabel=wp?wp.id_wp_axe_calc:'WP inconnu';
+      const actionBlocs=wpActions.map(a=>{
+        const resp=DB.membres.find(m=>m.id===a.responsable_suivi_action_ref);
+        const respName=resp?resp.Membre:(a.Cree_par||'—');
+        const indics=getIndicateursForAction(a.id);
+        const chips=indics.length
+          ? indics.map(iv=>{
+              const label=getIndicLabel(iv.indicateur_ref);
+              const val=iv.valeur||0;
+              return `<div class="rap-indic ${val===0?'rap-indic-zero':''}"><span>${label}</span><span class="rap-indic-val">${val.toLocaleString('fr-FR')}</span></div>`;
+            }).join('')
+          : '<div class="rap-indic rap-indic-zero">Aucun indicateur saisi</div>';
+        return `<div class="rap-action">
+          <div class="rap-action-hd">
+            <span class="rap-action-name">${a.nom_suivi_action||'(sans nom)'}</span>
+            <span class="rap-action-date">${fmtDate(a.date_suivi_action)}</span>
+            <span class="rap-action-resp">${respName}</span>
+          </div>
+          <div class="rap-indics">${chips}</div>
+        </div>`;
+      }).join('');
+      wpBlocs+=`<div class="rap-wp">
+        <div class="rap-wp-header">
+          <span style="width:8px;height:8px;border-radius:50%;background:${accentColor};flex-shrink:0;display:inline-block"></span>
+          <span class="rap-wp-title">${wpLabel}</span>
+          <span class="rap-wp-count">${wpActions.length} action${wpActions.length>1?'s':''}</span>
+        </div>${actionBlocs}</div>`;
+    });
+    section1+=`<div class="rap-section">
+      <div class="rap-proj-header">
+        <span class="rap-proj-badge" style="${badgeStyle}">${isBea?'BEA':'FIBI'}</span>
+        <span class="rap-proj-title">${proj.lib_projet}</span>
+        <span class="rap-proj-count">${actionsProj.length} action${actionsProj.length>1?'s':''}</span>
+      </div>${wpBlocs}</div>`;
+  });
+
+  // Section 2 : Récap indicateurs
+  const recapRows=Object.entries(recapMap).sort((a,b)=>b[1].total-a[1].total).map(([code,data])=>`<tr>
+    <td>${data.label}</td>
+    <td style="color:#888;font-size:11px">${code}</td>
+    <td style="text-align:center;color:#888">${data.nb}</td>
+    <td class="rap-recap-val">${data.total.toLocaleString('fr-FR')}</td>
+  </tr>`).join('');
+  const section2=`<div>
+    <div class="rap-recap-title">Récapitulatif des indicateurs</div>
+    <table class="rap-recap-table">
+      <thead><tr><th>Indicateur</th><th>Code</th><th style="text-align:center">Nb saisies</th><th style="text-align:right">Total cumulé</th></tr></thead>
+      <tbody>${recapRows}</tbody>
+    </table></div>`;
+
+  // KPIs top 4
+  const kpiTop=Object.entries(recapMap).slice(0,4).map(([code,data])=>`
+    <div class="rap-kpi"><div class="rap-kpi-val">${data.total.toLocaleString('fr-FR')}</div><div class="rap-kpi-label">${data.label}</div></div>`).join('');
+
+  zone.innerHTML=`<div class="rapport-doc" id="printZone">
+    <div class="rap-cover">
+      <div class="rap-cover-badge">CMQ BIOÉCO — RAPPORT D'ACTIVITÉ</div>
+      <h1>Suivi des actions et indicateurs</h1>
+      <p>${projetLabel} · ${periodeLabel}</p>
+      <div class="rap-cover-meta">
+        <div><strong>${totalActions}</strong>Actions</div>
+        <div><strong>${totalIndics}</strong>Indicateurs saisis</div>
+        <div><strong>${projetsActifs}</strong>Projet${projetsActifs>1?'s':''}</div>
+        <div><strong>${new Date().toLocaleDateString('fr-FR')}</strong>Généré le</div>
+      </div>
+    </div>
+    <div class="rap-kpis">${kpiTop}</div>
+    ${section1}
+    ${section2}
+  </div>`;
+}
+
+function exportPDF() {
+  if (!document.getElementById('printZone')) { alert("Générez d'abord le rapport."); return; }
+  window.print();
+}
+
+function exportExcel() {
+  if (typeof XLSX==='undefined') { alert('Librairie Excel non chargée, réessayez.'); return; }
+  const actions=getFilteredActions();
+  if (!actions.length) { alert('Aucune action à exporter.'); return; }
+  const wb=XLSX.utils.book_new();
+
+  // Onglet Actions
+  const aData=[['Action','Date','Responsable','Projet','WP/Axe','Commentaire']];
+  actions.forEach(a=>{
+    const resp=DB.membres.find(m=>m.id===a.responsable_suivi_action_ref);
+    const proj=DB.projets.find(p=>p.id===a.projet_ref);
+    const wp=DB.wps.find(w=>w.id===a.wp_axe_ref);
+    aData.push([a.nom_suivi_action||'',fmtDate(a.date_suivi_action),resp?resp.Membre:'',proj?proj.lib_projet:'',wp?wp.id_wp_axe_calc:'',a.Commentaires||'']);
+  });
+  const ws1=XLSX.utils.aoa_to_sheet(aData);
+  ws1['!cols']=[{wch:30},{wch:14},{wch:16},{wch:20},{wch:35},{wch:40}];
+  XLSX.utils.book_append_sheet(wb,ws1,'Actions');
+
+  // Onglet Indicateurs détail
+  const iData=[['Action','Date','Projet','Indicateur','Code','Valeur']];
+  actions.forEach(a=>{
+    const proj=DB.projets.find(p=>p.id===a.projet_ref);
+    getIndicateursForAction(a.id).forEach(iv=>{
+      const cfg=DB.indicConfig.find(c=>c.id===iv.indicateur_ref);
+      iData.push([a.nom_suivi_action||'',fmtDate(a.date_suivi_action),proj?proj.lib_projet:'',cfg?cfg.libelle_indicateurs:'',cfg?cfg.Code_indicateur:'',iv.valeur||0]);
+    });
+  });
+  const ws2=XLSX.utils.aoa_to_sheet(iData);
+  ws2['!cols']=[{wch:30},{wch:14},{wch:20},{wch:40},{wch:25},{wch:10}];
+  XLSX.utils.book_append_sheet(wb,ws2,'Indicateurs');
+
+  // Onglet Récapitulatif
+  const recapMap={};
+  actions.forEach(a=>{
+    getIndicateursForAction(a.id).forEach(iv=>{
+      const cfg=DB.indicConfig.find(c=>c.id===iv.indicateur_ref);
+      if (!cfg) return;
+      const key=cfg.Code_indicateur;
+      if (!recapMap[key]) recapMap[key]={label:cfg.libelle_indicateurs,total:0,nb:0};
+      recapMap[key].total+=(iv.valeur||0); recapMap[key].nb++;
+    });
+  });
+  const rData=[['Indicateur','Code','Nb saisies','Total cumulé']];
+  Object.entries(recapMap).sort((a,b)=>b[1].total-a[1].total).forEach(([code,data])=>rData.push([data.label,code,data.nb,data.total]));
+  const ws3=XLSX.utils.aoa_to_sheet(rData);
+  ws3['!cols']=[{wch:40},{wch:25},{wch:12},{wch:14}];
+  XLSX.utils.book_append_sheet(wb,ws3,'Récapitulatif');
+
+  const periode=document.getElementById('rYear')?.value||new Date().getFullYear();
+  XLSX.writeFile(wb,`CMQ_Rapport_${periode}.xlsx`);
 }
 
 grist.ready({requiredAccess:'full'});
