@@ -137,7 +137,7 @@ input[type=number]{-moz-appearance:textfield}
   <div class="header-left">
     <div class="logo">C</div>
     <div>
-      <h1>CMQ Bioéco — Suivi des indicateurs</h1>
+      <h1>CMQ Bioéco — Suivi des actions</h1>
       <p id="headerSub">Chargement…</p>
     </div>
   </div>
@@ -346,7 +346,7 @@ function renderKPIs() {
   const totals = {};
   selectedIndics.forEach(code => { totals[code] = 0; });
 
-  // Agréger depuis indicValeurs (BDD_SAISIE_suivi_participations)
+  // Agréger depuis indicValeurs (SUIVI_indicateurs)
   DB.indicValeurs.forEach(row => {
     const configRow = DB.indicConfig.find(c=>c.id===row.Indicateurs);
     if (configRow && totals.hasOwnProperty(configRow.Code_indicateur)) {
@@ -540,23 +540,31 @@ async function submitAction() {
       Commentaires: document.getElementById('fComment').value,
       Cree_par: 'widget_accueil'
     };
-    const [actionResult] = await grist.docApi.applyUserActions([['AddRecord','SAISIE_actions_realisees',null,record]]);
-    const newActionId = actionResult;
+    const result = await grist.docApi.applyUserActions([['AddRecord','SAISIE_actions_realisees',null,record]]);
+    // retValues[0] contient le rowId Grist de la ligne créée
+    const newActionId = result?.retValues?.[0] ?? result?.[0] ?? null;
+    const dateTs = Math.floor(new Date(date).getTime()/1000);
 
-    // Enregistrer les indicateurs
-    const indics = DB.indicConfig.filter(c=>c.type_sous_action===sousActionId);
-    for (const ind of indics) {
-      const el = document.getElementById('indic_'+ind.id);
-      if (!el) continue;
-      const val = el.value;
-      if (val===''||val===null) continue;
-      await grist.docApi.applyUserActions([['AddRecord','BDD_SAISIE_suivi_participations',null,{
-        Action_ref: newActionId,
-        Sous_Action_ref_calc: sousActionId,
-        Indicateurs: ind.id,
-        valeur_indicateur: parseFloat(val)||0,
-        Cree_par: 'widget_accueil'
-      }]]);
+    // ── CRÉATION AUTOMATIQUE DES LIGNES D'INDICATEURS ──
+    // Pour chaque indicateur lié à la sous-action, on crée une ligne dans
+    // SUIVI_indicateurs avec la valeur saisie (ou 0 par défaut).
+    // L'utilisateur peut ensuite compléter/corriger directement dans Grist.
+    const indics = DB.indicConfig.filter(c => c.type_sous_action === sousActionId);
+    const indicRows = indics.map(ind => {
+      const el = document.getElementById('indic_' + ind.id);
+      const valSaisie = el ? parseFloat(el.value) : NaN;
+      const valBool = (el && ind.type_valeur === 'booleen') ? (el.value === '1' ? 1 : 0) : 0;
+      return ['AddRecord', 'SUIVI_indicateurs', null, {
+        action_ref:     newActionId || 0,
+        indicateur_ref: ind.id,
+        valeur:         isNaN(valSaisie) ? 0 : valSaisie,
+        valeur_bool:    valBool,
+        Cree_par:       'widget_accueil',
+        date_creation:  dateTs,
+      }];
+    });
+    if (indicRows.length) {
+      await grist.docApi.applyUserActions(indicRows);
     }
 
     document.getElementById('toast').classList.add('show');
@@ -581,7 +589,7 @@ async function loadAll() {
       grist.docApi.fetchTable('PROJET_sous_actions'),
       grist.docApi.fetchTable('CMQ_RH'),
       grist.docApi.fetchTable('CONFIG_liste_des_indicateurs_par_action'),
-      grist.docApi.fetchTable('BDD_SAISIE_suivi_participations'),
+      grist.docApi.fetchTable('SUIVI_indicateurs'),
       grist.docApi.fetchTable('SAISIE_etablissements_participants_par_action'),
     ]);
     DB.actions=tableToRows(a); DB.projets=tableToRows(p); DB.wps=tableToRows(w);
